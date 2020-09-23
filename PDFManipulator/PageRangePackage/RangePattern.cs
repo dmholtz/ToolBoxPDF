@@ -6,10 +6,21 @@ using System.Text.RegularExpressions;
 
 namespace PDFManipulator
 {
+    /// <summary>
+    /// This class represents a pattern by which a range of page numbers can be textually represented
+    /// Valid patterns might be:
+    /// 1,2,3,4,5
+    /// 1-12
+    /// 1-12,13,14-16
+    /// </summary>
     public class RangePattern : IEnumerable<int>
     {
         private readonly string pattern;
 
+        /// <summary>
+        /// Removes whitespaces from the pattern string and saves the pattern in case the syntax check was successful.
+        /// </summary>
+        /// <param name="pattern"></param>
         public RangePattern(string pattern)
         {
             pattern = String.Concat(pattern.Where(c => !Char.IsWhiteSpace(c)));
@@ -22,7 +33,7 @@ namespace PDFManipulator
 
         /// <summary>
         /// Returns true if and only if the given pattern is syntactically valid.
-        /// The pattern must not contain any whitespaces.
+        /// @requires: The pattern must not contain any whitespaces.
         /// </summary>
         public static bool syntaxCheck(string pattern)
         {
@@ -30,6 +41,10 @@ namespace PDFManipulator
             return syntax.IsMatch(pattern);
         }
 
+        /// <summary>
+        /// Enumerates all page numbers of this pattern
+        /// </summary>
+        /// <returns></returns>
         public IEnumerator<int> GetEnumerator()
         {
             Regex numberRegex = new Regex(@"\d+");
