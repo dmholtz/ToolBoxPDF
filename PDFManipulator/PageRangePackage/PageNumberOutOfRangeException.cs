@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PDFManipulator
+namespace PdfManipulator.PageRangePackage
 {
     /// <summary>
     /// This exception is thrown whenever a page number is negative, zero or if it exceeds the number of pages of the corresponding document.

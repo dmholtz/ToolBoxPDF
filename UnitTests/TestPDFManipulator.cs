@@ -1,11 +1,10 @@
-using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
 using NUnit.Framework;
 
-using PDFManipulator;
+using PdfManipulator.PageRangePackage;
 using System.Collections.Generic;
 
 namespace UnitTests
@@ -22,7 +21,7 @@ namespace UnitTests
         [TestCase("1-", false)]
         public void SyntaxCheck(string pattern, bool expected)
         {
-            bool actual = RangePattern.syntaxCheck(pattern);
+            bool actual = RangePattern.SyntaxCheck(pattern);
             Assert.AreEqual(expected, actual);
         }
 
