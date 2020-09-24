@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-
 using iText.Kernel.Pdf;
-using iText.Layout;
 
 namespace PDFManipulator
 {
@@ -13,9 +10,9 @@ namespace PDFManipulator
     /// </summary>
     class PDFMerger
     {
-#pragma warning disable CS0649 // Field 'PDFMerger.sources' is never assigned to, and will always have its default value null
+
         private List<Stream> sources;
-#pragma warning restore CS0649 // Field 'PDFMerger.sources' is never assigned to, and will always have its default value null
+
 
 
         /// <summary>

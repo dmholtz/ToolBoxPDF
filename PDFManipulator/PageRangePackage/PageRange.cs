@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PDFManipulator
+namespace PdfManipulator.PageRangePackage
 {
     /// <summary>
-    /// Represents a set of pages, which are identified by their pagenumber
+    /// Represents a set of pages of a PdfDocument. Pages are identified by their pagenumber
     /// </summary>
     public class PageRange : SortedSet<int>
     {

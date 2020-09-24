@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace PDFManipulator
+namespace PdfManipulator.PageRangePackage
 {
     /// <summary>
     /// This class represents a pattern by which a range of page numbers can be textually represented
@@ -24,7 +24,7 @@ namespace PDFManipulator
         public RangePattern(string pattern)
         {
             pattern = String.Concat(pattern.Where(c => !Char.IsWhiteSpace(c)));
-            if (!syntaxCheck(pattern))
+            if (!SyntaxCheck(pattern))
             {
                 throw new ArgumentException("Syntactically invalid page range pattern");
             }
@@ -35,7 +35,7 @@ namespace PDFManipulator
         /// Returns true if and only if the given pattern is syntactically valid.
         /// @requires: The pattern must not contain any whitespaces.
         /// </summary>
-        public static bool syntaxCheck(string pattern)
+        public static bool SyntaxCheck(string pattern)
         {
             Regex syntax = new Regex(@"^(((\d+)|(\d+[-]\d+))([,]((\d+)|(\d+[-]\d+)))*)?$");
             return syntax.IsMatch(pattern);

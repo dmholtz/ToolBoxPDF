@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29926.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniPDF_UWP", "UniPDF_UWP\UniPDF_UWP.csproj", "{99D07F5A-E5CB-4CB6-A18E-FD7B661BDFB7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PDFManipulator", "PDFManipulator\PDFManipulator.csproj", "{F24A459D-5908-496B-A300-B4EA1F34C858}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfManipulator", "PDFManipulator\PdfManipulator.csproj", "{F24A459D-5908-496B-A300-B4EA1F34C858}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniPDF_Console", "UniPDF_Console\UniPDF_Console.csproj", "{A755844C-C4B0-4488-BC03-D3146CEFE7CE}"
 EndProject

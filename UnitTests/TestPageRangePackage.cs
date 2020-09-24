@@ -1,11 +1,10 @@
-using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
 using NUnit.Framework;
 
-using PDFManipulator;
+using PdfManipulator.PageRangePackage;
 using System.Collections.Generic;
 
 namespace UnitTests
@@ -22,7 +21,7 @@ namespace UnitTests
         [TestCase("1-", false)]
         public void SyntaxCheck(string pattern, bool expected)
         {
-            bool actual = RangePattern.syntaxCheck(pattern);
+            bool actual = RangePattern.SyntaxCheck(pattern);
             Assert.AreEqual(expected, actual);
         }
 
@@ -52,7 +51,7 @@ namespace UnitTests
 
     public class PageRangeTester
     {
-        private void createTestFile(int numberOfPages)
+        private void CreateTestFile(int numberOfPages)
         {
             PdfWriter writer = new PdfWriter("..\\..\\..\\TestAssets\\TestFile"+numberOfPages.ToString()+".pdf");
             PdfDocument pdfdoc = new PdfDocument(writer);
@@ -71,7 +70,7 @@ namespace UnitTests
             pdfdoc.Close();
         }
 
-        private PdfDocument loadTestFile(string filename)
+        private PdfDocument LoadTestFile(string filename)
         {
             PdfReader reader = new PdfReader(filename);
             return new PdfDocument(reader);
@@ -81,18 +80,18 @@ namespace UnitTests
         private PdfDocument doc100;   
 
         [OneTimeSetUp]
-        public void prepareTests()
+        public void PrepareTests()
         {
-            createTestFile(10);
-            createTestFile(100);
-            doc10 = loadTestFile("..\\..\\..\\TestAssets\\TestFile10.pdf");
-            doc100 = loadTestFile("..\\..\\..\\TestAssets\\TestFile100.pdf");
+            CreateTestFile(10);
+            CreateTestFile(100);
+            doc10 = LoadTestFile("..\\..\\..\\TestAssets\\TestFile10.pdf");
+            doc100 = LoadTestFile("..\\..\\..\\TestAssets\\TestFile100.pdf");
         }
 
         [TestCase("1-5,13-1,93-87", "1-13,87-93")]
         [TestCase("1", "1")]
         [TestCase("100-1", "1-100")]
-        public void testPageRangeFromPattern(string pattern, string expectedMinimalPattern)
+        public void TestPageRangeFromPattern(string pattern, string expectedMinimalPattern)
         {
             PageRange actualpageRange = PageRange.FromPattern(doc100, pattern);
             PageRange expectedPageRange = PageRange.FromPattern(doc100, expectedMinimalPattern);
@@ -102,7 +101,7 @@ namespace UnitTests
         }
 
         [TestCase("1-100")]
-        public void testEntireDocument(string expectedMinimalPattern)
+        public void TestEntireDocument(string expectedMinimalPattern)
         {
             PageRange pageRange = PageRange.EntireDocument(doc100);
             string acutalMinimalPattern = pageRange.GetPattern();
@@ -112,7 +111,7 @@ namespace UnitTests
         [TestCase("1-10", "")]
         [TestCase("", "1-10")]
         [TestCase("5-2,9", "1,6-8,10")]
-        public void testInvertPageRange(string nonInvertedPattern, string expectedInvertedPattern)
+        public void TestInvertPageRange(string nonInvertedPattern, string expectedInvertedPattern)
         {
             PageRange pageRange = PageRange.FromPattern(doc10, nonInvertedPattern);
             PageRange expectedInvertedPageRange = PageRange.FromPattern(doc10, expectedInvertedPattern);
