@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PdfManipulator.PdfExportUtilities
+namespace PdfManipulator.PdfIOUtilities
 {
     public interface IPageTransformation
     {
@@ -14,15 +14,7 @@ namespace PdfManipulator.PdfExportUtilities
 
     public class PageRotation : IPageTransformation
     {
-        private Action<PdfPage> transform;
-
-        public enum PageOrientation
-        {
-            Normal = 0,
-            RotateLeft = 90,
-            RotateRight = -90,
-            UpsideDown = 180
-        }
+        private readonly Action<PdfPage> transform;
 
         public PageRotation(int degAngle)
         {
@@ -39,5 +31,13 @@ namespace PdfManipulator.PdfExportUtilities
         {
             transform.Invoke(page);
         }
+    }
+
+    public enum PageOrientation
+    {
+        NoRotation = 0,
+        RotateLeft = -90,
+        RotateRight = 90,
+        UpsideDown = 180
     }
 }

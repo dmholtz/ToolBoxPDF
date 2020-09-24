@@ -4,12 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace PdfManipulator.PdfExportUtilities
+namespace PdfManipulator.PdfIOUtilities
 {
-    class PdfAssembler
+    public class PdfAssembler
     {
-        private Queue<ExportTask> exportTasks;
-        private Stream outputStream;
+        private readonly Queue<ExportTask> exportTasks;
+        private readonly Stream outputStream;
 
         public PdfAssembler(Stream outputStream)
         {
@@ -18,6 +18,7 @@ namespace PdfManipulator.PdfExportUtilities
                 throw new ArgumentException("Cannot access the output stream");
             }
             this.outputStream = outputStream;
+            exportTasks = new Queue<ExportTask>();
         }
 
         public void AppendTask(ExportTask t)

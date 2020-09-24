@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-
 using iText.Kernel.Pdf;
-using iText.Layout;
 
 namespace PDFManipulator
 {
