@@ -30,9 +30,9 @@
                         <GridView.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
-                                    <StackPanel Height="180" Width="180" Background="{Binding TileColor}" Margin="5">
+                                    <StackPanel Height="180" Width="180" Background="{Binding TileColor}" Margin="2">
                                         <Image Source="{Binding ImagePath}"  Height="130" Stretch="Uniform" Margin="10"/>
-                                        <TextBlock Text="{Binding ToolName}" FontSize="22" Margin="8,0,0,8" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                                        <TextBlock Text="{Binding ToolName}" FontSize="18" Margin="8,0,0,8" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
                                     </StackPanel>
                                 </Grid>
                             </DataTemplate>

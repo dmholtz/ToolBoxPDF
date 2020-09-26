@@ -60,6 +60,7 @@ namespace UniPDF_UWP
             // The main page is always at the top of the in-app back stack.
             // Once it is reached there is no further back so we can always disable the title bar back UI when navigated here.
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
+            NotifyUser(String.Empty, NotifyType.StatusMessage);
         }
 
         /// <summary>

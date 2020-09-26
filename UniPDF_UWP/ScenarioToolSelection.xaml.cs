@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace UniPDF_UWP
 {
@@ -13,57 +16,74 @@ namespace UniPDF_UWP
     {
         public ScenarioToolSelection()
         {
-            this.InitializeComponent();
+            this.InitializeComponent();            
             showToolbox();
-            
         }
 
+        private const int MAX_NUMBER_OF_FEATURES = 10;  
+        private ISet<ToolDefinitionWrapper> tools;
+
+        private void initializeTools()
+        {
+            tools = new HashSet<ToolDefinitionWrapper>(MAX_NUMBER_OF_FEATURES);
+            tools.Add(new ToolDefinitionWrapper(Tool.Merge, "Merge PDFs", "#0077b3", "Assets\\split.png"));
+            tools.Add(new ToolDefinitionWrapper(Tool.Split, "Split PDF", "#004275", "Assets\\split.png"));
+            tools.Add(new ToolDefinitionWrapper(Tool.Remove, "Remove Pages", "Midnightblue", "Assets\\split.png"));
+            tools.Add(new ToolDefinitionWrapper(Tool.FutureFeatures, "Upcoming Features", "Navy", "Assets\\split.png"));
+        }
+
+        /// <summary>
+        /// Displays the Toolbox with tool names, colors and icons.
+        /// </summary>
         private void showToolbox()
         {
+            initializeTools();
             List<ToolDefCollection> toolsSource = new List<ToolDefCollection>();
 
-            ToolDefCollection tool = new ToolDefCollection();
-            tool.ToolDefs.Add(new ToolDefinitionWrapper("A", "LimeGreen", "Assets\\split.png"));
-            toolsSource.Add(tool);
-
-            tool = new ToolDefCollection();
-            tool.ToolDefs.Add(new ToolDefinitionWrapper("B", "Crimson", "Assets\\split.png"));
-            toolsSource.Add(tool);
-
-            tool = new ToolDefCollection();
-            tool.ToolDefs.Add(new ToolDefinitionWrapper("C", "Midnightblue", "Assets\\split.png"));
-            toolsSource.Add(tool);
-
-            tool = new ToolDefCollection();
-            tool.ToolDefs.Add(new ToolDefinitionWrapper("D", "Teal", "Assets\\split.png"));
-            toolsSource.Add(tool);
-
-            tool = new ToolDefCollection();
-            tool.ToolDefs.Add(new ToolDefinitionWrapper("E", "OrangeRed", "Assets\\split.png"));
-            toolsSource.Add(tool);
-
-            tool = new ToolDefCollection();
-            tool.ToolDefs.Add(new ToolDefinitionWrapper("F", "Orchid", "Assets\\split.png"));
-            toolsSource.Add(tool);
+            foreach(var toolDefinition in tools)
+            {
+                var toolDefCollection = new ToolDefCollection();
+                toolDefCollection.ToolDefs.Add(toolDefinition);
+                toolsSource.Add(toolDefCollection);
+            }
 
             toolboxItems.Source = toolsSource;
         }
 
         private void Toolbox_ItemClick(object sender, ItemClickEventArgs e)
         {
-            String msg = sender.ToString();
-            string msg2 = ((ToolDefinitionWrapper)e.ClickedItem).ToolName;
-            MainPage.Current.NotifyUser("Item has been clicked by " + msg+ " "+ msg2, NotifyType.StatusMessage);
+            Tool clickedTool = ((ToolDefinitionWrapper)e.ClickedItem).ToolIdentifier;
+
+            Frame rootFrame = Window.Current.Content as Frame;
+            switch (clickedTool)
+            {
+                case Tool.Merge:
+                    rootFrame.Navigate(typeof(MergeToolPage));
+                    break;
+                default:
+                    MainPage.Current.NotifyUser("Invalid keyboard input.", NotifyType.ErrorMessage);
+                    break;
+            }
+        }
+
+        public enum Tool
+        {
+            Merge,
+            Split,
+            Remove,
+            FutureFeatures,
         }
 
         public class ToolDefinitionWrapper
         {
+            public Tool ToolIdentifier { get; }
             public string ToolName { get; }
             public string TileColor { get; }
             public string ImagePath { get; }
 
-            public ToolDefinitionWrapper(string toolName, string tileColor, string imagePath)
+            public ToolDefinitionWrapper(Tool identifier, string toolName, string tileColor, string imagePath)
             {
+                ToolIdentifier = identifier;
                 ToolName = toolName;
                 TileColor = tileColor;
                 ImagePath = imagePath;
