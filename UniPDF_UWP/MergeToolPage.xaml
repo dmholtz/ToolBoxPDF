@@ -6,13 +6,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    
-    
-    <Page.Resources>
-        <CollectionViewSource x:Name="itemsViewSource" IsSourceGrouped="True" 
-                              ItemsPath="ToolDefs"/>
-    </Page.Resources>
-
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid x:Name="RootGrid" Margin="12,10,12,12">
@@ -25,29 +18,39 @@
                 <TextBlock Text="Merge PDF Documents:" Style="{StaticResource SampleHeaderTextStyle}" TextWrapping="WrapWholeWords"/>
             </StackPanel>
 
-            <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
-                <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
+            <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" HorizontalContentAlignment="Left">
+                <StackPanel HorizontalAlignment="Stretch">
                     <TextBlock Text="List of documents to be merged: Reorder the files by drag and drop" Margin="8,0" Style="{StaticResource ScenarioDescriptionTextStyle}" TextWrapping="WrapWholeWords"/>
-                    <ListView x:Name="itemListView" Margin="120,0,0,60" ItemsSource="{Binding Source={StaticResource itemsViewSource}}">
+                    <ListView x:Name="loadedFilesView" Margin="20,0,0,10" HorizontalAlignment="Stretch" MinHeight="120" MinWidth="350" SelectionMode="Extended"
+                              SelectionChanged="loadedFilesView_SelectionChanged">
+
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <Grid Height="110" Margin="6">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Width="110" Height="110">
-                                        <Image Source="{Binding Image}" Stretch="UniformToFill"/>
-                                    </Border>
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="10,0,0,0">
-                                        <TextBlock Text="{Binding Title}" Style="{StaticResource TitleTextStyle}" TextWrapping="NoWrap"/>
-                                        <TextBlock Text="{Binding Subtitle}" Style="{StaticResource CaptionTextStyle}" TextWrapping="NoWrap"/>
-                                        <TextBlock Text="{Binding Description}" Style="{StaticResource BodyTextStyle}" MaxHeight="60"/>
-                                    </StackPanel>
-                                </Grid>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding FileName}" FontSize="16" FontWeight="SemiBold" TextWrapping="NoWrap" Margin="0,5,0,4"/>
+                                    <Grid HorizontalAlignment="Stretch" Margin="0,0,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding PageCount}" TextWrapping="NoWrap"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding FileSize}" TextWrapping="NoWrap" HorizontalAlignment="Right" HorizontalTextAlignment="Right"
+                                                   Margin="0,0,0,5"/>
+                                    </Grid>
+                                </StackPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
+                    <Grid>
+                        <Button x:Name="FileAddButton" Margin ="10,0,0,0" Width ="100" Grid.Column="0" Content="Add files" HorizontalAlignment="Left" Click="FileAddButton_Click"/>
+                        <Button x:Name ="FileRemoveButton" Margin ="0,0,10,0" Width ="100" Grid.Column="1" Content="Remove" HorizontalAlignment="Right" Visibility="Collapsed" Click="FileRemoveButton_Click"/>
+                    </Grid>
                 </StackPanel>
             </ScrollViewer>
         </Grid>

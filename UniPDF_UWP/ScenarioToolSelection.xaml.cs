@@ -55,23 +55,8 @@ namespace UniPDF_UWP
             Tool clickedTool = ((ToolDefinitionWrapper)e.ClickedItem).ToolIdentifier;
 
             Frame rootFrame = Window.Current.Content as Frame;
-            switch (clickedTool)
-            {
-                case Tool.Merge:
-                    rootFrame.Navigate(typeof(MergeToolPage));
-                    break;
-                default:
-                    MainPage.Current.NotifyUser("Invalid keyboard input.", NotifyType.ErrorMessage);
-                    break;
-            }
-        }
 
-        public enum Tool
-        {
-            Merge,
-            Split,
-            Remove,
-            FutureFeatures,
+            rootFrame.Navigate(typeof(ToolPage), clickedTool);
         }
 
         public class ToolDefinitionWrapper
@@ -99,5 +84,13 @@ namespace UniPDF_UWP
                 ToolDefs = new ObservableCollection<ToolDefinitionWrapper>();
             }
         }
+    }
+
+    public enum Tool
+    {
+        Merge,
+        Split,
+        Remove,
+        FutureFeatures,
     }
 }

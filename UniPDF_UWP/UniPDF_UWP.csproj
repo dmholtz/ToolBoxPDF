@@ -135,6 +135,9 @@
     <Compile Include="ScenarioToolSelection.xaml.cs">
       <DependentUpon>ScenarioToolSelection.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ToolPage.xaml.cs">
+      <DependentUpon>ToolPage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -142,6 +145,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\PlusIcon.png" />
     <Content Include="Assets\split.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
@@ -176,6 +180,10 @@
     <Page Include="Styles\Styles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ToolPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
