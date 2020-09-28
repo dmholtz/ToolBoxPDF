@@ -31,12 +31,12 @@ namespace UniPDF_UWP.FileManagement
 
         private void ComputeDecimalRepresentation()
         {
-            if(length < 10)
+            if (length < 10)
             {
                 size = length;
                 unit = FileSizeUnit.Byte;
             }
-            else if (length < 100 * (double) FileSizeUnit.kB)
+            else if (length < 100 * (double)FileSizeUnit.kB)
             {
                 size = length / (double)FileSizeUnit.kB;
                 unit = FileSizeUnit.kB;
@@ -55,8 +55,8 @@ namespace UniPDF_UWP.FileManagement
 
         public string ToString(uint decimals)
         {
-            double roundedSize = Math.Round(size, (int) decimals);
-            return roundedSize.ToString() + unit.ToString();
+            double roundedSize = Math.Round(size, (int)decimals);
+            return roundedSize.ToString() + " " + unit.ToString();
         }
 
         public override string ToString()
@@ -71,5 +71,5 @@ namespace UniPDF_UWP.FileManagement
             MB = 1000000,
             GB = 1000000000
         }
-    } 
+    }
 }
