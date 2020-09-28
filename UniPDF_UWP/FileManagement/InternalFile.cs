@@ -33,8 +33,9 @@ namespace UniPDF_UWP.FileManagement
             private set => document = value;
         }
         public string FileName { get; private set; }
-        public string FileSize { get; private set; }
+        public string SizeTextual { get; private set; }
         public int PageCount { get; private set; }
+        public string PageCountTextual { get; private set; }
         public bool Decrypted { get; private set; }
 
         /// <summary>
@@ -94,7 +95,13 @@ namespace UniPDF_UWP.FileManagement
             var basicProperties = await File.GetBasicPropertiesAsync();
             ulong length = basicProperties.Size;
             Size = new FileSize(length);
-            FileSize = Size.ToString();
+            SizeTextual = Size.ToString();
+        }
+
+        private void DeterminePageCount()
+        {
+            PageCount = Document.GetNumberOfPages();
+            PageCountTextual = PageCount.ToString() + " pages";
         }
 
         /// <summary>
@@ -119,7 +126,7 @@ namespace UniPDF_UWP.FileManagement
             }
 
             Decrypted = true;
-            PageCount = Document.GetNumberOfPages();
+            DeterminePageCount();
         }
     }
 

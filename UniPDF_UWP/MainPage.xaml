@@ -13,7 +13,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <SplitView x:Name="SideMenuSplitter" IsPaneOpen="True" Grid.Row="1" DisplayMode="Inline">
+        <SplitView x:Name="SideMenuSplitter" IsPaneOpen="True" Grid.Row="1" DisplayMode="Inline" OpenPaneLength="250">
             <SplitView.Pane>
                 <RelativePanel Margin="10,0,0,0">
                     <TextBlock x:Name="AppTitle" Text="Sample Title Here" Style="{StaticResource SampleHeaderTextStyle}" TextWrapping="Wrap" Margin="0,10,0,0"/>
@@ -33,7 +33,6 @@
                                    TextWrapping="Wrap"/>
                         <StackPanel x:Name="LinksPanel" Orientation="Vertical" Margin="10,10,0,10">
                             <HyperlinkButton Content="Git Repository" Tag="https://github.com/dmholtz/UniversalPDF/" Click="Hyperlink_Click" FontSize="12" Style="{StaticResource HyperlinkStyle}" />
-                            <TextBlock Text="|"  Style="{StaticResource SeparatorStyle}" HorizontalAlignment="Center" />
                             <HyperlinkButton x:Name="CreatorLink" Content="Visit Creator on GitHub" Tag="https://github.com/dmholtz" Click="Hyperlink_Click" FontSize="12" Style="{StaticResource HyperlinkStyle}"/>
                         </StackPanel>
                     </StackPanel>

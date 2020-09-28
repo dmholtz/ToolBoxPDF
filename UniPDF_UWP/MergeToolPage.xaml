@@ -8,21 +8,21 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid x:Name="RootGrid" Margin="12,10,12,12">
+        <Grid x:Name="RootGrid" Margin="10,10,0, 0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <StackPanel Margin="0,0,0,10">
-                <TextBlock Text="Merge PDF Documents:" Style="{StaticResource SampleHeaderTextStyle}" TextWrapping="WrapWholeWords"/>
-            </StackPanel>
 
             <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" HorizontalContentAlignment="Left">
                 <StackPanel HorizontalAlignment="Stretch">
-                    <TextBlock Text="List of documents to be merged: Reorder the files by drag and drop" Margin="8,0" Style="{StaticResource ScenarioDescriptionTextStyle}" TextWrapping="WrapWholeWords"/>
-                    <ListView x:Name="loadedFilesView" Margin="20,0,0,10" HorizontalAlignment="Stretch" MinHeight="120" MinWidth="350" SelectionMode="Extended"
-                              SelectionChanged="loadedFilesView_SelectionChanged">
+                    <TextBlock Text="List of documents to be merged:" Style="{StaticResource SubtitleTextBlockStyle}" TextWrapping="WrapWholeWords"/>
+                    <TextBlock Text="Use drag and drop for reordering the files." Style="{StaticResource ScenarioDescriptionTextStyle}"/>
+                    <ListView x:Name="loadedFilesView" Margin="15" HorizontalAlignment="Stretch" MinHeight="120" MaxHeight="500" MinWidth="350" SelectionMode="Multiple" 
+                              BorderThickness="1" BorderBrush="DarkGray"
+                              SelectionChanged="loadedFilesView_SelectionChanged" CanDragItems="True" CanReorderItems="True" AllowDrop="True" 
+                              DragItemsCompleted="loadedFilesView_DragItemsCompleted">
 
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
@@ -34,23 +34,44 @@
                             <DataTemplate>
                                 <StackPanel>
                                     <TextBlock Text="{Binding FileName}" FontSize="16" FontWeight="SemiBold" TextWrapping="NoWrap" Margin="0,5,0,4"/>
-                                    <Grid HorizontalAlignment="Stretch" Margin="0,0,0,0">
+                                    <Grid HorizontalAlignment="Stretch">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="{Binding PageCount}" TextWrapping="NoWrap"/>
-                                        <TextBlock Grid.Column="1" Text="{Binding FileSize}" TextWrapping="NoWrap" HorizontalAlignment="Right" HorizontalTextAlignment="Right"
+                                        <TextBlock Grid.Column="0" Text="{Binding PageCountTextual}" TextWrapping="NoWrap"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding SizeTextual}" TextWrapping="NoWrap" HorizontalAlignment="Right" HorizontalTextAlignment="Right"
                                                    Margin="0,0,0,5"/>
                                     </Grid>
                                 </StackPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
-                    <Grid>
-                        <Button x:Name="FileAddButton" Margin ="10,0,0,0" Width ="100" Grid.Column="0" Content="Add files" HorizontalAlignment="Left" Click="FileAddButton_Click"/>
-                        <Button x:Name ="FileRemoveButton" Margin ="0,0,10,0" Width ="100" Grid.Column="1" Content="Remove" HorizontalAlignment="Right" Visibility="Collapsed" Click="FileRemoveButton_Click"/>
+                    <Grid Margin="0,0,0,20">
+                        <Button x:Name="FileAddButton" Margin ="30,0,0,0" Width ="100" Grid.Column="0" Content="Add files" HorizontalAlignment="Left" Click="FileAddButton_Click"/>
+                        <Button x:Name ="FileRemoveButton" Margin ="0,0,30,0" Width ="100" Grid.Column="1" Content="Remove" HorizontalAlignment="Right" Visibility="Collapsed" Click="FileRemoveButton_Click"/>
                     </Grid>
+                    <TextBlock Text="Merged Files: Summary" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                    <Grid HorizontalAlignment="Left" MaxWidth="400" Margin="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition MinWidth="160" Width="auto"/>
+                            <ColumnDefinition MinWidth="60" Width="*"/>
+                            <ColumnDefinition MinWidth="200" Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Total number of file:"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Total number of pages:"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="File size (approximately):"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" x:Name="SummaryFiles" Text="no files" HorizontalAlignment="Right"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" x:Name="SummaryPages" Text="0 pages" HorizontalAlignment="Right"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" x:Name="SummarySize" Text="0 Byte" HorizontalAlignment="Right"/>
+                        <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" x:Name="MergeButton" Margin ="50,0,0,0" Content="Merge and Save" HorizontalAlignment="Left" Click="MergeButton_Click"/>
+                    </Grid>
+                    
                 </StackPanel>
             </ScrollViewer>
         </Grid>

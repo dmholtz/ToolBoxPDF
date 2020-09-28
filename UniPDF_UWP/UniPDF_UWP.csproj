@@ -193,7 +193,12 @@
       <Version>6.2.9</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\PDFManipulator\PDFManipulator.csproj">
+      <Project>{F24A459D-5908-496B-A300-B4EA1F34C858}</Project>
+      <Name>PDFManipulator</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

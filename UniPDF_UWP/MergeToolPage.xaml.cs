@@ -1,7 +1,12 @@
-﻿using System;
+﻿using PdfManipulator.PdfIOUtilities;
+using PdfManipulator.PageRangePackage;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using UniPDF_UWP.FileManagement;
 using Windows.Storage;
 using Windows.Storage.AccessCache;
@@ -81,6 +86,7 @@ namespace UniPDF_UWP
 
             
             loadedFilesView.ItemsSource = loadedFilesList;
+            DisplaySummary();
         }
 
         public class InternalFileCollection
@@ -95,8 +101,7 @@ namespace UniPDF_UWP
 
         private void loadedFilesView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            IList<object> selectedItems = e.AddedItems;
-            if (selectedItems.Count > 0)
+            if (loadedFilesView.SelectedItems.Count > 0)
             {
                 FileRemoveButton.Visibility = Visibility.Visible;      
             }
@@ -104,6 +109,40 @@ namespace UniPDF_UWP
             {
                 FileRemoveButton.Visibility = Visibility.Collapsed;
             }
+            ToolPage.Current.NotifyUser(String.Empty, NotifyType.StatusMessage);
+        }
+
+        private void DisplaySummary()
+        {
+            int pageCount = 0;
+            FileSize totalSize = FileSize.ZeroBytes();
+            foreach(var obj in loadedFilesList)
+            {
+                var file = (InternalFile)obj;
+                totalSize += file.Size;
+                pageCount += file.PageCount;
+            }
+            if (pageCount == 1)
+            {
+                SummaryPages.Text = pageCount.ToString() + " page";
+            }
+            else
+            {
+                SummaryPages.Text = pageCount.ToString() + " pages";
+            }
+            if (loadedFilesList.Count == 0)
+            {
+                SummaryFiles.Text = "no files";
+            }
+            else if (loadedFilesList.Count == 1)
+            {
+                SummaryFiles.Text = "1 file";
+            }
+            else
+            {
+                SummaryFiles.Text = loadedFilesList.Count.ToString() +" file";
+            }
+            SummarySize.Text = totalSize.ToString();
         }
 
         private void FileRemoveButton_Click(object sender, RoutedEventArgs e)
@@ -118,6 +157,58 @@ namespace UniPDF_UWP
                 loadedFilesList.Remove(selectedFile);
             }
             loadedFilesView.ItemsSource = loadedFilesList;
+            DisplaySummary();
+        }
+
+        private void loadedFilesView_DragItemsCompleted(ListViewBase sender, DragItemsCompletedEventArgs args)
+        {
+
+            StringBuilder s = new StringBuilder();
+            foreach (var item in loadedFilesView.Items)
+            {
+                var file = (InternalFile)item;
+                s.Append(file.FileName + " ");
+            }
+
+            ToolPage.Current.NotifyUser(s.ToString(), NotifyType.StatusMessage);
+        }
+
+        private async void MergeButton_Click(object sender, RoutedEventArgs e)
+        {
+            var savePicker = new FileSavePicker();
+            savePicker.FileTypeChoices.Add("PDF-Document", new List<String>() { ".pdf" });
+            savePicker.SuggestedFileName = "MergedPdfDocuments";
+            if (!StorageApplicationPermissions.FutureAccessList.ContainsItem(App.RECENT_FILE_DIRECTORY_TOKEN))
+            {
+                savePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+            }
+            StorageFile savedFile = await savePicker.PickSaveFileAsync();
+
+            if (savedFile != null)
+            {
+                Task<Stream> outputStreamTask = savedFile.OpenStreamForWriteAsync();
+                Stream outputStream = await outputStreamTask;
+                if (outputStream != null)
+                {
+                    PdfAssembler pdfAssembler = new PdfAssembler(outputStream);
+                    foreach (var obj in loadedFilesList)
+                    {
+                        var file = (InternalFile)obj;
+                        PageRange pageRange = PageRange.EntireDocument(file.Document);
+                        ExportTask task = new ExportTask(pageRange);
+                        pdfAssembler.AppendTask(task);
+                    }
+                    pdfAssembler.ExportFile();
+                }
+                else
+                {
+                    ToolPage.Current.NotifyUser("Error occured while while exporting the merged file. Try again.", NotifyType.ErrorMessage);
+                }
+            }
+            else
+            {
+                ToolPage.Current.NotifyUser("No output file has been selected.", NotifyType.ErrorMessage);
+            }
         }
     }
 }
