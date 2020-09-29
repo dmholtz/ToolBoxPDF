@@ -37,7 +37,7 @@ namespace UniPDF_UWP
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             rootPage = ToolPage.Current;
-            rootPage.SetPageTitle(PAGE_TITLE);         
+            rootPage.SetPageTitle(PAGE_TITLE);
         }
 
         private async void FileAddButton_Click(object sender, RoutedEventArgs e)
@@ -55,12 +55,12 @@ namespace UniPDF_UWP
 
             foreach (var storageFile in selectedFiles)
             {
-                try
+                InternalFile internalFile = await InternalFile.LoadInternalFileAsync(storageFile);
+                if (internalFile.Decrypted)
                 {
-                    InternalFile internalFile = await InternalFile.LoadInternalFileAsync(storageFile);
                     loadedFilesList.Add(internalFile);
                 }
-                catch
+                else
                 {
                     encryptedFilesCount++;
                 }
@@ -74,17 +74,17 @@ namespace UniPDF_UWP
                     StorageApplicationPermissions.FutureAccessList.AddOrReplace(App.RECENT_FILE_DIRECTORY_TOKEN, parentfolder);
                 }
             }
-            
+
             if (encryptedFilesCount > 0)
             {
                 ToolPage.Current.NotifyUser("Unable to load " + encryptedFilesCount + " encrypted file(s).", NotifyType.ErrorMessage);
             }
             else
             {
-                ToolPage.Current.NotifyUser("Opened: "+loadedFilesList.Count.ToString(), NotifyType.StatusMessage);
+                ToolPage.Current.NotifyUser("Opened: " + loadedFilesList.Count.ToString(), NotifyType.StatusMessage);
             }
 
-            
+
             loadedFilesView.ItemsSource = loadedFilesList;
             DisplaySummary();
         }
@@ -103,7 +103,7 @@ namespace UniPDF_UWP
         {
             if (loadedFilesView.SelectedItems.Count > 0)
             {
-                FileRemoveButton.Visibility = Visibility.Visible;      
+                FileRemoveButton.Visibility = Visibility.Visible;
             }
             else
             {
@@ -116,7 +116,7 @@ namespace UniPDF_UWP
         {
             int pageCount = 0;
             FileSize totalSize = FileSize.ZeroBytes();
-            foreach(var obj in loadedFilesList)
+            foreach (var obj in loadedFilesList)
             {
                 var file = (InternalFile)obj;
                 totalSize += file.Size;
@@ -140,7 +140,7 @@ namespace UniPDF_UWP
             }
             else
             {
-                SummaryFiles.Text = loadedFilesList.Count.ToString() +" file";
+                SummaryFiles.Text = loadedFilesList.Count.ToString() + " file";
             }
             SummarySize.Text = totalSize.ToString();
         }
@@ -151,7 +151,7 @@ namespace UniPDF_UWP
             IList<object> selectedItems = loadedFilesView.SelectedItems.ToImmutableList();
             // Deselect all items in the listview
             loadedFilesView.SelectedItem = null;
-            foreach(var selectedItem in selectedItems)
+            foreach (var selectedItem in selectedItems)
             {
                 InternalFile selectedFile = (InternalFile)selectedItem;
                 loadedFilesList.Remove(selectedFile);

@@ -66,29 +66,30 @@ namespace UniPDF_UWP.FileManagement
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        //public bool TryDecrypting(string key)
-        //{
-        //    if (!Decrypted)
-        //    {
-        //        // transform the key into a password and set the reader properties
-        //        byte[] password = new System.Text.ASCIIEncoding().GetBytes(key);
-        //        ReaderProperties readerProperties = new ReaderProperties().SetPassword(password);
-        //        PdfReader inputReader = new PdfReader(inputStream, readerProperties);
+        public async Task<bool> TryDecryptingAsync(string key)
+        {
+            if (!Decrypted)
+            {
+                // transform the key into a password and set the reader properties
+                byte[] password = new System.Text.ASCIIEncoding().GetBytes(key);
+                ReaderProperties readerProperties = new ReaderProperties().SetPassword(password);
 
-        //        try
-        //        {
-        //            // try to open the document. If successful, the key is valid
-        //            Document = new PdfDocument(inputReader);
-        //        }
-        //        catch
-        //        {
-        //            Decrypted = false;
-        //            inputReader.Close();
-        //        }
-        //        Decrypted = true;
-        //    }
-        //    return Decrypted;
-        //}
+                var inputStream = await File.OpenStreamForReadAsync();
+                PdfReader inputReader = new PdfReader(inputStream, readerProperties);
+                try
+                {
+                    // try to open the file using the given key
+                    Document = new PdfDocument(inputReader);
+                    Decrypted = true;
+                    DeterminePageCount();
+                }
+                catch
+                {                
+                    inputReader.Close();                 
+                }
+            }
+            return Decrypted;
+        }
 
         private async void GetFileSize()
         {
@@ -115,18 +116,17 @@ namespace UniPDF_UWP.FileManagement
             try
             {
                 // try, whether the PdfDocumet can be opened without a key
-                Document = new PdfDocument(inputReader);            
+                Document = new PdfDocument(inputReader);
+                Decrypted = true;
+                DeterminePageCount();
             }
             catch
             {
                 PageCount = 0;
                 Decrypted = false;
                 inputReader.Close();
-                throw new EncryptedFileException("Selected file is encrypted. Cannot access the file without a valid password.");
+                PageCountTextual = "🔒 password-protected";
             }
-
-            Decrypted = true;
-            DeterminePageCount();
         }
     }
 

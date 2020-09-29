@@ -119,6 +119,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DecryptToolPage.xaml.cs">
+      <DependentUpon>DecryptToolPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FileManagement\InternalFile.cs" />
     <Compile Include="FileManagement\FileSize.cs" />
     <Compile Include="MainPage.xaml.cs">
@@ -160,6 +163,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="DecryptToolPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
