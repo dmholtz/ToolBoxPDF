@@ -45,6 +45,9 @@ namespace UniPDF_UWP
                     case Tool.Merge:
                         ToolFrame.Navigate(typeof(MergeToolPage));
                         break;
+                    case Tool.Decrypt:
+                        ToolFrame.Navigate(typeof(DecryptToolPage));
+                        break;
                     default:
                         NotifyUser("Navigation Error occurred: Unable to navigate to the desired tool frame.", NotifyType.ErrorMessage);
                         break;
