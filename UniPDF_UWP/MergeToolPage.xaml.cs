@@ -89,16 +89,6 @@ namespace UniPDF_UWP
             DisplaySummary();
         }
 
-        public class InternalFileCollection
-        {
-            public ObservableCollection<InternalFile> InternFile { get; }
-
-            public InternalFileCollection()
-            {
-                InternFile = new ObservableCollection<InternalFile>();
-            }
-        }
-
         private void loadedFilesView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (loadedFilesView.SelectedItems.Count > 0)

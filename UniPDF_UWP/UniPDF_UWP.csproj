@@ -122,6 +122,9 @@
     <Compile Include="DecryptToolPage.xaml.cs">
       <DependentUpon>DecryptToolPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EncryptToolPage.xaml.cs">
+      <DependentUpon>EncryptToolPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FileManagement\InternalFile.cs" />
     <Compile Include="FileManagement\FileSize.cs" />
     <Compile Include="MainPage.xaml.cs">
@@ -177,6 +180,7 @@
     <Content Include="Assets\encrypt.png" />
     <Content Include="Assets\license.png" />
     <Content Include="Assets\merge.png" />
+    <Content Include="Assets\merge2.png" />
     <Content Include="Assets\pdf.png" />
     <Content Include="Assets\remove.png" />
     <Content Include="Assets\settings.png" />
@@ -232,6 +236,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="DecryptToolPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EncryptToolPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

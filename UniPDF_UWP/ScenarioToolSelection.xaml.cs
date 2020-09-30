@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
 
 namespace UniPDF_UWP
 {
@@ -26,7 +23,8 @@ namespace UniPDF_UWP
         private void initializeTools()
         {
             tools = new HashSet<ToolDefinitionWrapper>(MAX_NUMBER_OF_FEATURES);
-            tools.Add(new ToolDefinitionWrapper(Tool.Merge, "Merge PDFs", "#0077b3", "Assets\\merge.png"));
+            tools.Add(new ToolDefinitionWrapper(Tool.Merge, "Merge PDFs", "#0077b3", "Assets\\merge2.png"));
+            tools.Add(new ToolDefinitionWrapper(Tool.Encrypt, "Encryption Tool", "Crimson", "Assets\\encrypt.png"));
             tools.Add(new ToolDefinitionWrapper(Tool.Decrypt, "Remove Password", "#004275", "Assets\\decrypt.png"));
             tools.Add(new ToolDefinitionWrapper(Tool.Split, "Split PDF", "#004275", "Assets\\split.png"));
             tools.Add(new ToolDefinitionWrapper(Tool.Remove, "Remove Pages", "Midnightblue", "Assets\\split2.png"));
@@ -93,6 +91,7 @@ namespace UniPDF_UWP
         Split,
         Remove,
         FutureFeatures,
-        Decrypt
+        Decrypt,
+        Encrypt
     }
 }

@@ -27,8 +27,27 @@ namespace PdfManipulator.PdfIOUtilities
         }
 
         public void ExportFile()
-        {
+        {          
             PdfWriter outputWriter = new PdfWriter(outputStream);
+            ExportOperation(outputWriter);         
+        }
+
+        /// <summary>
+        /// Encrypts a file with AES-256 using the given owner password. The user password is equal to the owner password. Owner and user are granted all permission.
+        /// </summary>
+        /// <param name="ownerPassword"></param>
+        public void ExportFileEncrypted(string ownerPassword)
+        {
+            int permissions = 4096 - 3; // all permissions, @see EncryptionConstants
+            byte[] rawOwnerPassword = new System.Text.ASCIIEncoding().GetBytes(ownerPassword);
+            WriterProperties writerProperties = new WriterProperties();
+            writerProperties.SetStandardEncryption(rawOwnerPassword, rawOwnerPassword, permissions, EncryptionConstants.ENCRYPTION_AES_256);
+            PdfWriter outputWriter = new PdfWriter(outputStream, writerProperties);
+            ExportOperation(outputWriter);
+        }
+
+        private void ExportOperation(PdfWriter outputWriter)
+        {
             PdfDocument outputDocument = new PdfDocument(outputWriter);
 
             AssembleFile(outputDocument);
