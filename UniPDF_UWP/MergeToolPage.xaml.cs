@@ -175,40 +175,48 @@ namespace UniPDF_UWP
 
         private async void MergeButton_Click(object sender, RoutedEventArgs e)
         {
-            var savePicker = new FileSavePicker();
-            savePicker.FileTypeChoices.Add("PDF-Document", new List<String>() { ".pdf" });
-            savePicker.SuggestedFileName = "MergedPdfDocuments";
-            if (!StorageApplicationPermissions.FutureAccessList.ContainsItem(App.RECENT_FILE_DIRECTORY_TOKEN))
+            if (loadedFilesList.Count > 0)
             {
-                savePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-            }
-            StorageFile savedFile = await savePicker.PickSaveFileAsync();
-
-            if (savedFile != null)
-            {
-                Task<Stream> outputStreamTask = savedFile.OpenStreamForWriteAsync();
-                Stream outputStream = await outputStreamTask;
-                if (outputStream != null)
+                var savePicker = new FileSavePicker();
+                savePicker.FileTypeChoices.Add("PDF-Document", new List<String>() { ".pdf" });
+                savePicker.SuggestedFileName = "MergedPdfDocuments";
+                if (!StorageApplicationPermissions.FutureAccessList.ContainsItem(App.RECENT_FILE_DIRECTORY_TOKEN))
                 {
-                    PdfAssembler pdfAssembler = new PdfAssembler(outputStream);
-                    foreach (var obj in loadedFilesList)
+                    savePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+                }
+                StorageFile savedFile = await savePicker.PickSaveFileAsync();
+
+                if (savedFile != null)
+                {
+                    Task<Stream> outputStreamTask = savedFile.OpenStreamForWriteAsync();
+                    Stream outputStream = await outputStreamTask;
+                    if (outputStream != null)
                     {
-                        var file = (InternalFile)obj;
-                        PageRange pageRange = PageRange.EntireDocument(file.Document);
-                        ExportTask task = new ExportTask(pageRange);
-                        pdfAssembler.AppendTask(task);
+                        PdfAssembler pdfAssembler = new PdfAssembler(outputStream);
+                        foreach (var obj in loadedFilesList)
+                        {
+                            var file = (InternalFile)obj;
+                            PageRange pageRange = PageRange.EntireDocument(file.Document);
+                            ExportTask task = new ExportTask(pageRange);
+                            pdfAssembler.AppendTask(task);
+                        }
+                        pdfAssembler.ExportFile();
                     }
-                    pdfAssembler.ExportFile();
+                    else
+                    {
+                        ToolPage.Current.NotifyUser("Error occured while while exporting the merged file. Try again.", NotifyType.ErrorMessage);
+                    }
                 }
                 else
                 {
-                    ToolPage.Current.NotifyUser("Error occured while while exporting the merged file. Try again.", NotifyType.ErrorMessage);
+                    ToolPage.Current.NotifyUser("No output file has been selected.", NotifyType.ErrorMessage);
                 }
+
             }
             else
             {
-                ToolPage.Current.NotifyUser("No output file has been selected.", NotifyType.ErrorMessage);
-            }
+                ToolPage.Current.NotifyUser("No files loaded.", NotifyType.ErrorMessage);
+            }         
         }
     }
 }
