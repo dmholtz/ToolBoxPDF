@@ -68,10 +68,19 @@
                         <TextBlock Text="All files in the list above, which match the entered password, will be unlocked." TextWrapping="WrapWholeWords" />
                         <PasswordBox x:Name="PasswordUserInput" PlaceholderText="Enter a password" Margin="15,10,0,0"  Width="350" HorizontalAlignment="Left" PasswordChanged="InputPasswordBox_PasswordChanged"/>
                         <TextBlock x:Name="PasswordIncorrectLabel" Margin ="20,0,0,0" Text="Password mismatch" Foreground="Red" FontStyle="Italic" Visibility="Collapsed"/>
-                        <StackPanel Orientation="Horizontal" Margin="0, 10, 0, 0">
-                            <Button x:Name="SaveCopyButton" Width ="100" Margin ="30,0,0,0" Content="Save a Copy" HorizontalAlignment="Left" Click="SaveCopyButton_Click"/>
-                            <Button x:Name="OverwriteButton" Width ="100" Margin ="120,0,0,0" Content="Overwrite" HorizontalAlignment="Left" Click="OverwriteButton_Click"/>
+
+                        <TextBlock Margin="0,10,0,0" Text="Save options" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                        <TextBlock Text="Export file location:" TextWrapping="WrapWholeWords" />
+                        <ToggleSwitch x:Name="OutDirectoryOption" Margin ="10,0,0,10" OnContent="Same export folder for all files" OffContent="Select export folders manually" Toggled="OutDirectoryOption_Toggled" />
+                        <StackPanel x:Name="ResolveNameConflictPanel" Visibility="Collapsed">
+                            <TextBlock Text="The output files will be named according to their corresponding source files:" TextWrapping="WrapWholeWords" />
+                            <StackPanel>
+                                <RadioButton x:Name="AutoRenameOption" Margin =" 10,0,0,0" Checked="RadioButton_Checked" GroupName="ResolveGroup" Content="Automatically rename files"/>
+                                <RadioButton x:Name="ReplaceOption" Margin="10,0,0,0" Checked="RadioButton_Checked" GroupName="ResolveGroup" Content="Replace existing files"/>
+                            </StackPanel>
+                            <TextBlock x:Name="CautionReplaceFile" Margin ="10,0,0,10" Text="Caution: This cannot be undone!" Foreground="Red" Visibility="Collapsed"/>
                         </StackPanel>
+                        <Button x:Name="SaveButton" Width ="100" Margin ="10,20,0,0" Content="Save files" HorizontalAlignment="Left" Click="SaveButton_Click"/>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
