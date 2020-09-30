@@ -14,6 +14,7 @@ using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using System.Reflection.Metadata;
 
 namespace UniPDF_UWP
 {
@@ -149,9 +150,24 @@ namespace UniPDF_UWP
             FunctionPanel.Visibility = Visibility.Visible;
         }
 
-        private async void SaveCopyButton_Click(object sender, RoutedEventArgs e)
+        private async void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (OutDirectoryOption.IsOn)
+            {
+                // save all files to the same folder
+                SaveFilesAutomatically();
+            }
+            else
+            {
+                // save all files to distinct folders
+                SaveFilesManually();
+            }
+        }
+
+        private async void SaveFilesManually()
         {
             IList<InternalFile> loadedFileIterationList = loadedFilesList.ToImmutableList<InternalFile>();
+            int passwordMismatchCount = 0;
             foreach (var file in loadedFileIterationList)
             {
                 Task<bool> decryptAttempt = file.TryDecryptingAsync(PasswordUserInput.Password);
@@ -164,94 +180,113 @@ namespace UniPDF_UWP
                     {
                         savePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
                     }
-
                     StorageFile savedFile = await savePicker.PickSaveFileAsync();
 
-                    if (savedFile != null)
-                    {
-                        Task<Stream> outputStreamTask = savedFile.OpenStreamForWriteAsync();
-                        Stream outputStream = await outputStreamTask;
-                        if (outputStream != null)
-                        {
-                            PdfAssembler pdfAssembler = new PdfAssembler(outputStream);
-                            PageRange pageRange = PageRange.EntireDocument(file.Document);
-                            ExportTask task = new ExportTask(pageRange);
-                            pdfAssembler.AppendTask(task);
-                            pdfAssembler.ExportFile();
-                            loadedFilesList.Remove(file);
-                        }
-                        else
-                        {
-                            ToolPage.Current.NotifyUser("Error occured while while exporting the merged file. Try again.", NotifyType.ErrorMessage);
-                        }
-                    }
-                    else
-                    {
-                        ToolPage.Current.NotifyUser("No output file has been selected.", NotifyType.ErrorMessage);
-                    }
+                    SaveDecryptedFileAsync(file, savedFile);
+                }
+                else
+                {
+                    passwordMismatchCount++;
                 }
             }
-            if (loadedFileIterationList.Count == loadedFilesList.Count)
+            if (passwordMismatchCount == loadedFilesList.Count)
             {
                 PasswordIncorrectLabel.Visibility = Visibility.Visible;
             }
         }
 
-        private async void OverwriteButton_Click(object sender, RoutedEventArgs e)
+        private async void SaveFilesAutomatically()
         {
             IList<InternalFile> loadedFileIterationList = loadedFilesList.ToImmutableList<InternalFile>();
-            foreach (var file in loadedFileIterationList)
+            FolderPicker folderPicker = new FolderPicker();
+            folderPicker.SuggestedStartLocation = PickerLocationId.Desktop;
+            folderPicker.FileTypeFilter.Add(".pdf");
+            StorageFolder parentfolder = await folderPicker.PickSingleFolderAsync();
+
+            if (parentfolder != null)
             {
-                Task<bool> decryptAttempt = file.TryDecryptingAsync(PasswordUserInput.Password);
-                if (await decryptAttempt)
+                int passwordMismatchCount = 0;
+                foreach (var file in loadedFileIterationList)
                 {
-                    FolderPicker folderPicker = new FolderPicker();
-                    folderPicker.SuggestedStartLocation = PickerLocationId.Desktop;
-                    folderPicker.FileTypeFilter.Add(".pdf");
-                    StorageFolder parentfolder = await folderPicker.PickSingleFolderAsync();                    
-                    
-                    var savedFile = await parentfolder.CreateFileAsync(file.FileName, CreationCollisionOption.ReplaceExisting);
-                    
-                    if (savedFile != null)
+                    Task<bool> decryptAttempt = file.TryDecryptingAsync(PasswordUserInput.Password);
+                    if (await decryptAttempt)
                     {
-                        Task<Stream> outputStreamTask = savedFile.OpenStreamForWriteAsync();
-                        Stream outputStream = await outputStreamTask;
-                        outputStream.Position = 0;
-                        if (outputStream != null)
-                        {
-                            PdfAssembler pdfAssembler = new PdfAssembler(outputStream);
-                            PageRange pageRange = PageRange.EntireDocument(file.Document);
-                            ExportTask task = new ExportTask(pageRange);
-                            pdfAssembler.AppendTask(task);
-                            pdfAssembler.ExportFile();
-                            loadedFilesList.Remove(file);
-                        }
-                        else
-                        {
-                            ToolPage.Current.NotifyUser("Error occured while while exporting the merged file. Try again.", NotifyType.ErrorMessage);
-                        }
+                        bool replaceOption = ReplaceOption.IsChecked == null ? false : (bool)ReplaceOption.IsChecked;
+                        CreationCollisionOption collisionOption = replaceOption ? CreationCollisionOption.ReplaceExisting : CreationCollisionOption.GenerateUniqueName;
+                        var savedFile = await parentfolder.CreateFileAsync(file.FileName, collisionOption);
+                        SaveDecryptedFileAsync(file, savedFile);
                     }
                     else
                     {
-                        ToolPage.Current.NotifyUser("No output file has been selected.", NotifyType.ErrorMessage);
+                        passwordMismatchCount++;
                     }
                 }
+                if (passwordMismatchCount == loadedFilesList.Count)
+                {
+                    PasswordIncorrectLabel.Visibility = Visibility.Visible;
+                }
             }
-            if (loadedFileIterationList.Count == loadedFilesList.Count)
+            else
             {
-                PasswordIncorrectLabel.Visibility = Visibility.Visible;
-            }
+                ToolPage.Current.NotifyUser("No output folder has been selected.", NotifyType.ErrorMessage);
+            }            
         }
 
-        private Task<StorageFolder> GetParent(InternalFile file)
-        {
-            return file.File.GetParentAsync().AsTask();
-        }
-
-        private async void InputPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        private void InputPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
             ToolPage.Current.NotifyUser(String.Empty, NotifyType.ErrorMessage);
             PasswordIncorrectLabel.Visibility = Visibility.Collapsed;
+        }
+
+        private async void SaveDecryptedFileAsync(InternalFile source, StorageFile outputFile)
+        {
+            if (outputFile != null)
+            {
+                Task<Stream> outputStreamTask = outputFile.OpenStreamForWriteAsync();
+                Stream outputStream = await outputStreamTask;
+                if (outputStream != null)
+                {
+                    PdfAssembler pdfAssembler = new PdfAssembler(outputStream);
+                    PageRange pageRange = PageRange.EntireDocument(source.Document);
+                    ExportTask task = new ExportTask(pageRange);
+                    pdfAssembler.AppendTask(task);
+                    pdfAssembler.ExportFile();
+                    loadedFilesList.Remove(source);
+                }
+                else
+                {
+                    ToolPage.Current.NotifyUser("Error occured while while exporting the merged file. Try again.", NotifyType.ErrorMessage);
+                }
+            }
+            else
+            {
+                ToolPage.Current.NotifyUser("No output file has been selected.", NotifyType.ErrorMessage);
+            }
+        }
+
+        private void OutDirectoryOption_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (OutDirectoryOption.IsOn)
+            {
+                ResolveNameConflictPanel.Visibility = Visibility.Visible;
+                AutoRenameOption.IsChecked = true;
+            }
+            else
+            {
+                ResolveNameConflictPanel.Visibility = Visibility.Collapsed; ;
+            }
+        }
+
+        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            if (ReplaceOption.IsChecked != null && (bool) ReplaceOption.IsChecked)
+            {
+                CautionReplaceFile.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                CautionReplaceFile.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }

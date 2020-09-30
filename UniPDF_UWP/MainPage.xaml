@@ -62,8 +62,8 @@
                 </ToggleButton>
             </Border>
             <!-- Header Area: Fill in the App's Name and an appropriate icon for the app. The icon is purely decorative (Accessibilityview) -->
-            <Image x:Name="AppLogo" Stretch="None" Source="Assets/Square44x44Logo.scale-200.png" AutomationProperties.AccessibilityView="Raw" />
-            <TextBlock x:Name="Header" Text="UniversalPDF" Style="{StaticResource TagLineTextStyle}" Margin="0,15,0,0" />
+            <Image Stretch="Fill" MaxHeight ="50" Source="Assets/ToolBox pdf.png" AutomationProperties.AccessibilityView="Raw" />
+            <TextBlock Text="ToolBox PDF" Style="{StaticResource TitleTextBlockStyle}" Margin="5,15,0,0" />
         </StackPanel>
     </Grid>
 </Page>
