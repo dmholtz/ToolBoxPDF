@@ -148,7 +148,75 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\AppIcon\AppIcon-pdf.altform-lightunplated_targetsize-16.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.altform-lightunplated_targetsize-24.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.altform-lightunplated_targetsize-256.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.altform-lightunplated_targetsize-32.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.altform-lightunplated_targetsize-48.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.altform-unplated_targetsize-16.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.altform-unplated_targetsize-24.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.altform-unplated_targetsize-256.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.altform-unplated_targetsize-32.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.altform-unplated_targetsize-48.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.scale-100.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.scale-125.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.scale-150.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.scale-200.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.scale-400.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.targetsize-16.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.targetsize-24.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.targetsize-256.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.targetsize-32.png" />
+    <Content Include="Assets\AppIcon\AppIcon-pdf.targetsize-48.png" />
+    <Content Include="Assets\Badge\BadgeLogo.scale-100.png" />
+    <Content Include="Assets\Badge\BadgeLogo.scale-125.png" />
+    <Content Include="Assets\Badge\BadgeLogo.scale-150.png" />
+    <Content Include="Assets\Badge\BadgeLogo.scale-200.png" />
+    <Content Include="Assets\Badge\BadgeLogo.scale-400.png" />
+    <Content Include="Assets\decrypt.png" />
+    <Content Include="Assets\encrypt.png" />
+    <Content Include="Assets\license.png" />
+    <Content Include="Assets\merge.png" />
+    <Content Include="Assets\pdf.png" />
+    <Content Include="Assets\remove.png" />
+    <Content Include="Assets\settings.png" />
+    <Content Include="Assets\SplashScreen\SplashScreen.scale-100.png" />
+    <Content Include="Assets\SplashScreen\SplashScreen.scale-125.png" />
+    <Content Include="Assets\SplashScreen\SplashScreen.scale-150.png" />
+    <Content Include="Assets\SplashScreen\SplashScreen.scale-200.png" />
+    <Content Include="Assets\SplashScreen\SplashScreen.scale-400.png" />
     <Content Include="Assets\split.png" />
+    <Content Include="Assets\split2.png" />
+    <Content Include="Assets\StoreLogo\StoreLogo.scale-100.png" />
+    <Content Include="Assets\StoreLogo\StoreLogo.scale-125.png" />
+    <Content Include="Assets\StoreLogo\StoreLogo.scale-150.png" />
+    <Content Include="Assets\StoreLogo\StoreLogo.scale-200.png" />
+    <Content Include="Assets\StoreLogo\StoreLogo.scale-400.png" />
+    <Content Include="Assets\Tile\LargeTile.scale-100.png" />
+    <Content Include="Assets\Tile\LargeTile.scale-125.png" />
+    <Content Include="Assets\Tile\LargeTile.scale-150.png" />
+    <Content Include="Assets\Tile\LargeTile.scale-200.png" />
+    <Content Include="Assets\Tile\LargeTile.scale-400.png" />
+    <Content Include="Assets\Tile\SmallTile.scale-100.png" />
+    <Content Include="Assets\Tile\SmallTile.scale-125.png" />
+    <Content Include="Assets\Tile\SmallTile.scale-150.png" />
+    <Content Include="Assets\Tile\SmallTile.scale-200.png" />
+    <Content Include="Assets\Tile\SmallTile.scale-400.png" />
+    <Content Include="Assets\Tile\Square150x150Logo.scale-100.png" />
+    <Content Include="Assets\Tile\Square150x150Logo.scale-125.png" />
+    <Content Include="Assets\Tile\Square150x150Logo.scale-150.png" />
+    <Content Include="Assets\Tile\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Tile\Square150x150Logo.scale-400.png" />
+    <Content Include="Assets\Tile\ToolBox PDF.png" />
+    <Content Include="Assets\Tile\Wide310x150Logo.scale-100.png" />
+    <Content Include="Assets\Tile\Wide310x150Logo.scale-125.png" />
+    <Content Include="Assets\Tile\Wide310x150Logo.scale-150.png" />
+    <Content Include="Assets\Tile\Wide310x150Logo.scale-200.png" />
+    <Content Include="Assets\Tile\Wide310x150Logo.scale-400.png" />
+    <Content Include="Assets\ToolBox PDF.png" />
+    <Content Include="Assets\ToolBoxPDF_Padding.png" />
+    <Content Include="Assets\tools.png" />
+    <Content Include="Assets\upcoming.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -205,6 +273,11 @@
       <Project>{F24A459D-5908-496B-A300-B4EA1F34C858}</Project>
       <Name>PDFManipulator</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\PDF.xcf" />
+    <None Include="Assets\ToolBoxPDF.xcf" />
+    <None Include="Assets\ToolBoxPDF_Padding.xcf" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
