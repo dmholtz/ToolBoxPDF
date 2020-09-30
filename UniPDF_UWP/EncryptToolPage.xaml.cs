@@ -14,25 +14,24 @@ using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using System.Reflection.Metadata;
 
 namespace UniPDF_UWP
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class DecryptToolPage : Page
+    public sealed partial class EncryptToolPage : Page
     {
-        private static readonly string PAGE_TITLE = "Remove Password";
+        private static readonly string PAGE_TITLE = "Encryption Tool: Protect PDF with password";
 
         private ToolPage rootPage;
 
         /// <summary>
-        /// Contains only password-protected files that have not yet been decrypted
+        /// Contains only unprotected files which need to be decrypted
         /// </summary>
         private ObservableCollection<InternalFile> loadedFilesList;
 
-        public DecryptToolPage()
+        public EncryptToolPage()
         {
             this.InitializeComponent();
             loadedFilesList = new ObservableCollection<InternalFile>();
@@ -63,8 +62,8 @@ namespace UniPDF_UWP
                     StorageApplicationPermissions.FutureAccessList.AddOrReplace(App.RECENT_FILE_DIRECTORY_TOKEN, parentfolder);
                 }
             }
-            
-            List<InternalFile> unprotectedFiles = new List<InternalFile>();
+
+            List<InternalFile> protectedFiles = new List<InternalFile>();
 
             foreach (var storageFile in selectedFiles)
             {
@@ -72,33 +71,28 @@ namespace UniPDF_UWP
 
                 if (internalFile.Decrypted)
                 {
-                    unprotectedFiles.Add(internalFile);
+                    loadedFilesList.Add(internalFile);
                 }
                 else
                 {
-                    loadedFilesList.Add(internalFile);
-                }               
+                    protectedFiles.Add(internalFile);
+                }
             }
 
-            if(unprotectedFiles.Count > 0)
+            if (protectedFiles.Count > 0)
             {
-                StringBuilder notification = new StringBuilder("The following are ignored because they are not password-protected:\n");
-                foreach (var file in unprotectedFiles)
+                StringBuilder notification = new StringBuilder("The following are ignored because they are already password-protected:\n");
+                foreach (var file in protectedFiles)
                 {
                     notification.Append(file.FileName + "\n");
                 }
                 ToolPage.Current.NotifyUser(notification.ToString(), NotifyType.ErrorMessage);
             }
-
-            if(loadedFilesList.Count>0)
-            {
-                ExportPanel.Visibility = Visibility.Visible;
-            }
             loadedFilesView.ItemsSource = loadedFilesList;
         }
-        
+
         private void loadedFilesView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {            
+        {
             if (loadedFilesView.SelectedItems.Count > 0)
             {
                 FileRemoveButton.Visibility = Visibility.Visible;
@@ -122,74 +116,40 @@ namespace UniPDF_UWP
                 loadedFilesList.Remove(selectedFile);
             }
             loadedFilesView.ItemsSource = loadedFilesList;
-
-            if (loadedFilesList.Count == 0)
-            {
-                ExportPanel.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        private void AgreeCheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            FunctionPanel.Visibility = Visibility.Collapsed;
-            ExportPanel.Visibility = Visibility.Collapsed;
-        }
-
-        private void AgreeCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            FunctionPanel.Visibility = Visibility.Visible;
-            if (loadedFilesList.Count > 0)
-            {
-                ExportPanel.Visibility = Visibility.Visible;
-            }
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            if (OutDirectoryOption.IsOn)
+            if (OutDirectoryOption.IsOn && loadedFilesList.Count > 1)
             {
                 // save all files to the same folder
-                SaveFilesAutomatically();
+                SaveFilesAsBatch();
             }
             else
             {
                 // save all files to distinct folders
-                SaveFilesManually();
+                SaveFilesSeparately();
             }
         }
 
-        private async void SaveFilesManually()
+        private async void SaveFilesSeparately()
         {
             IList<InternalFile> loadedFileIterationList = loadedFilesList.ToImmutableList<InternalFile>();
-            int passwordMismatchCount = 0;
             foreach (var file in loadedFileIterationList)
             {
-                Task<bool> decryptAttempt = file.TryDecryptingAsync(PasswordUserInput.Password);
-                if (await decryptAttempt)
+                var savePicker = new FileSavePicker();
+                savePicker.FileTypeChoices.Add("PDF-Document", new List<String>() { ".pdf" });
+                savePicker.SuggestedFileName = file.FileName.Replace(".pdf", "-encrypted.pdf");
+                if (!StorageApplicationPermissions.FutureAccessList.ContainsItem(App.RECENT_FILE_DIRECTORY_TOKEN))
                 {
-                    var savePicker = new FileSavePicker();
-                    savePicker.FileTypeChoices.Add("PDF-Document", new List<String>() { ".pdf" });
-                    savePicker.SuggestedFileName = file.FileName;
-                    if (!StorageApplicationPermissions.FutureAccessList.ContainsItem(App.RECENT_FILE_DIRECTORY_TOKEN))
-                    {
-                        savePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-                    }
-                    StorageFile savedFile = await savePicker.PickSaveFileAsync();
-
-                    SaveDecryptedFileAsync(file, savedFile);
+                    savePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
                 }
-                else
-                {
-                    passwordMismatchCount++;
-                }
+                StorageFile savedFile = await savePicker.PickSaveFileAsync();
+                EncryptAndSaveAsync(file, savedFile);
             }
-            if (passwordMismatchCount == loadedFilesList.Count)
-            {
-                PasswordIncorrectLabel.Visibility = Visibility.Visible;
-            }
-        }
+        }       
 
-        private async void SaveFilesAutomatically()
+        private async void SaveFilesAsBatch()
         {
             IList<InternalFile> loadedFileIterationList = loadedFilesList.ToImmutableList<InternalFile>();
             FolderPicker folderPicker = new FolderPicker();
@@ -199,40 +159,24 @@ namespace UniPDF_UWP
 
             if (parentfolder != null)
             {
-                int passwordMismatchCount = 0;
                 foreach (var file in loadedFileIterationList)
                 {
-                    Task<bool> decryptAttempt = file.TryDecryptingAsync(PasswordUserInput.Password);
-                    if (await decryptAttempt)
-                    {
-                        bool replaceOption = ReplaceOption.IsChecked == null ? false : (bool)ReplaceOption.IsChecked;
-                        CreationCollisionOption collisionOption = replaceOption ? CreationCollisionOption.ReplaceExisting : CreationCollisionOption.GenerateUniqueName;
-                        var savedFile = await parentfolder.CreateFileAsync(file.FileName, collisionOption);
-                        SaveDecryptedFileAsync(file, savedFile);
-                    }
-                    else
-                    {
-                        passwordMismatchCount++;
-                    }
-                }
-                if (passwordMismatchCount == loadedFilesList.Count)
-                {
-                    PasswordIncorrectLabel.Visibility = Visibility.Visible;
+                    string fileName = file.FileName.Replace(".pdf", "-encrypted.pdf");
+                    var savedFile = await parentfolder.CreateFileAsync(fileName,  CreationCollisionOption.GenerateUniqueName);                   
+                    EncryptAndSaveAsync(file, savedFile);
                 }
             }
             else
             {
                 ToolPage.Current.NotifyUser("No output folder has been selected.", NotifyType.ErrorMessage);
-            }            
+            }
         }
 
-        private void InputPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
-        {
-            ToolPage.Current.NotifyUser(String.Empty, NotifyType.ErrorMessage);
-            PasswordIncorrectLabel.Visibility = Visibility.Collapsed;
-        }
-
-        private async void SaveDecryptedFileAsync(InternalFile source, StorageFile outputFile)
+        /// <summary>
+        /// Encrypts ands saves a file.
+        /// @Requires: PasswordInput.Password != null && !String.Empty().Equals(PasswordInput.Password)
+        /// </summary>
+        private async void EncryptAndSaveAsync(InternalFile source, StorageFile outputFile)
         {
             if (outputFile != null)
             {
@@ -240,12 +184,15 @@ namespace UniPDF_UWP
                 Stream outputStream = await outputStreamTask;
                 if (outputStream != null)
                 {
+                    string password = PasswordInput.Password;
+
                     PdfAssembler pdfAssembler = new PdfAssembler(outputStream);
                     PageRange pageRange = PageRange.EntireDocument(source.Document);
                     ExportTask task = new ExportTask(pageRange);
                     pdfAssembler.AppendTask(task);
-                    pdfAssembler.ExportFile();
+                    pdfAssembler.ExportFileEncrypted(password);
                     loadedFilesList.Remove(source);
+
                 }
                 else
                 {
@@ -258,28 +205,31 @@ namespace UniPDF_UWP
             }
         }
 
-        private void OutDirectoryOption_Toggled(object sender, RoutedEventArgs e)
+        private void PasswordRepeatedInput_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            if (OutDirectoryOption.IsOn)
+            if (PasswordInput.Password.Equals(PasswordRepeatedInput.Password))
             {
-                ResolveNameConflictPanel.Visibility = Visibility.Visible;
-                AutoRenameOption.IsChecked = true;
+                PasswordMismatchLabel.Visibility = Visibility.Collapsed;
+                SaveButton.IsEnabled = true;
             }
             else
             {
-                ResolveNameConflictPanel.Visibility = Visibility.Collapsed; ;
+                PasswordMismatchLabel.Visibility = Visibility.Visible;
+                SaveButton.IsEnabled = false;
             }
         }
 
-        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        private void PasswordInput_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            if (ReplaceOption.IsChecked != null && (bool) ReplaceOption.IsChecked)
+            if (PasswordInput.Password.Equals(PasswordRepeatedInput.Password))
             {
-                CautionReplaceFile.Visibility = Visibility.Visible;
+                PasswordMismatchLabel.Visibility = Visibility.Collapsed;
+                SaveButton.IsEnabled = true;
             }
             else
             {
-                CautionReplaceFile.Visibility = Visibility.Collapsed;
+                PasswordMismatchLabel.Visibility = Visibility.Visible;
+                SaveButton.IsEnabled = false;
             }
         }
     }
