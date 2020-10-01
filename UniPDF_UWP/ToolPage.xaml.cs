@@ -45,6 +45,9 @@ namespace UniPDF_UWP
                     case Tool.Merge:
                         ToolFrame.Navigate(typeof(MergeToolPage));
                         break;
+                    case Tool.Select:
+                        ToolFrame.Navigate(typeof(SelectToolPage));
+                        break;
                     case Tool.Encrypt:
                         ToolFrame.Navigate(typeof(EncryptToolPage));
                         break;

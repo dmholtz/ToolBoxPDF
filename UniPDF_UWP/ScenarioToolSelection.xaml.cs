@@ -24,10 +24,10 @@ namespace UniPDF_UWP
         {
             tools = new HashSet<ToolDefinitionWrapper>(MAX_NUMBER_OF_FEATURES);
             tools.Add(new ToolDefinitionWrapper(Tool.Merge, "Merge PDFs", "#0077b3", "Assets\\merge2.png"));
-            tools.Add(new ToolDefinitionWrapper(Tool.Encrypt, "Encryption Tool", "Crimson", "Assets\\encrypt.png"));
+            tools.Add(new ToolDefinitionWrapper(Tool.Select, "Select pages", "Crimson", "Assets\\select1.png"));
+            tools.Add(new ToolDefinitionWrapper(Tool.Encrypt, "Encryption Tool", "Crimson", "Assets\\encrypt.png"));        
             tools.Add(new ToolDefinitionWrapper(Tool.Decrypt, "Remove Password", "#004275", "Assets\\decrypt.png"));
-            tools.Add(new ToolDefinitionWrapper(Tool.Split, "Split PDF", "#004275", "Assets\\split.png"));
-            tools.Add(new ToolDefinitionWrapper(Tool.Remove, "Remove Pages", "Midnightblue", "Assets\\split2.png"));
+            tools.Add(new ToolDefinitionWrapper(Tool.Split, "Split PDF", "#004275", "Assets\\split.png"));       
             tools.Add(new ToolDefinitionWrapper(Tool.FutureFeatures, "Upcoming Features", "Navy", "Assets\\split.png"));
         }
 
@@ -89,7 +89,7 @@ namespace UniPDF_UWP
     {
         Merge,
         Split,
-        Remove,
+        Select,
         FutureFeatures,
         Decrypt,
         Encrypt
