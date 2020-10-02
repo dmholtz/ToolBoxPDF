@@ -17,7 +17,7 @@
 
             <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" HorizontalContentAlignment="Left">
                 <StackPanel HorizontalAlignment="Stretch">
-                    <StackPanel x:Name="FunctionPanel" HorizontalAlignment="Stretch" Margin="0,20,0,0">
+                    <StackPanel x:Name="FileLoadPanel" HorizontalAlignment="Stretch">
                         <TextBlock Text="Choose file to extract pages from" Style="{StaticResource SubtitleTextBlockStyle}" TextWrapping="WrapWholeWords"/>
                         <ListView x:Name="loadedFilesView" Margin="15" HorizontalAlignment="Stretch" Height="60" MinWidth="350" SelectionMode="None" 
                               BorderThickness="1" BorderBrush="DarkGray">
@@ -54,18 +54,47 @@
                         <TextBlock Text="Select Pages" Style="{StaticResource SubtitleTextBlockStyle}"/>
                         <TextBlock Text="Options:" TextWrapping="WrapWholeWords" />
                         <ComboBox x:Name="SelectionOptions" AutomationProperties.Name="View page size" SelectedIndex="0" Margin="15, 5,0,0" SelectionChanged="SelectionOptions_SelectionChanged">
-                            <ComboBoxItem>Select files to be extracted</ComboBoxItem>
-                            <ComboBoxItem>Select files to be removed</ComboBoxItem>
+                            <ComboBoxItem>Selected pages are extracted</ComboBoxItem>
+                            <ComboBoxItem>Selected pages are removed</ComboBoxItem>
                         </ComboBox>
-                        <TextBlock Text="Enter a page range or tick individual pages:" TextWrapping="WrapWholeWords" Margin="0,20,0,0"/>
-                        <TextBox x:Name="PageRangeInput" HorizontalAlignment="Stretch" Margin="15,5,0,0" TextWrapping="NoWrap" TextChanged="PageRange_TextChanged"/>
+
+                        <TextBlock Text="Enter a page range or tick individual pages in the preview:" TextWrapping="WrapWholeWords" Margin="0,20,0,0"/>
+                        <TextBox x:Name="PageRangeInput" HorizontalAlignment="Stretch" Margin="15,5,0,0" TextWrapping="NoWrap" TextChanged="PageRange_TextChanged" PlaceholderText="Enter a page range"/>
                         <TextBlock x:Name="PageRangeInvalidLabel" Text="Invalid page range" TextWrapping="WrapWholeWords" Margin="25,0,0,0" Foreground="Red" Visibility="Collapsed"/>
 
-                        <TextBlock Text="Summary" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,20,0,0"/>
+                        <TextBlock Text="Preview:" TextWrapping="WrapWholeWords" Margin="0,15,0,5" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                        <Border x:Name="PreviewArea" BorderBrush="DarkGray" BorderThickness="1" HorizontalAlignment="Stretch" Margin="15,0,0,10" SizeChanged="Border_SizeChangedAsync" >
+                            <StackPanel>
+                                <Grid HorizontalAlignment="Stretch" Margin="10,5,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="auto"/>
+
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button x:Name="PreviousPage" Grid.Column="0" Content="&#xE760;" FontSize="20" Padding="0" Height="32" Width="40" FontFamily="Segoe MDL2 Assets" Margin="10,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Stretch" Click="PreviousPage_Click"/>
+                                    <Button x:Name="NextPage" Grid.Column="1" Content="&#xE761;" FontSize="20" Padding="0" Height="32" Width="40" FontFamily="Segoe MDL2 Assets" Margin="5,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Stretch" Click="NextPage_Click"/>
+                                    <TextBox x:Name="CurrentPageNumber" Grid.Column="2" Margin="10,0,0,0" Text="1" TextAlignment="Center" InputScope="Number" VerticalAlignment="Center" Padding="2,3,2,3" RequestedTheme="Default" TextChanged="CurrentPageNumber_TextChanged"/>
+                                    <TextBlock Grid.Column="3" Text="/" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0"/>
+                                    <TextBox x:Name="TotalPageNumber" Grid.Column="4" Text="13" TextAlignment="Center" Margin="0,0,0,0" IsReadOnly="True" IsEnabled="True" Padding="0,3,0,0" VerticalAlignment="Center" UseLayoutRounding="True" Background="#66FFFFFF" BorderBrush="#66000000"/>
+                                    <TextBlock Grid.Column="5" Text="select page" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,10,0"/>
+                                    <ToggleButton x:Name="CurrentPageSelectButton" Content="&#xE73E;" FontFamily="Segoe MDL2 Assets" Grid.Column="6" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Stretch" Click="CurrentPageSelectButton_Click"/>
+                                </Grid>
+                                <Border x:Name="PreviewBorder" BorderBrush="Black" BorderThickness="1" Margin="5">
+                                    <Image x:Name="Preview" AutomationProperties.Name="PDF document content" Stretch="None" Height="400" MaxHeight="400" />
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="Summary" Style="{StaticResource SubtitleTextBlockStyle}"/>
                         <TextBlock x:Name="SummaryText" Text="No pages will be extracted" TextWrapping="WrapWholeWords" />
                         <Button x:Name="SaveButton" Margin ="15,10,0,10" Content="Save Documnet" HorizontalAlignment="Left" Click="SaveButton_Click" IsEnabled="False"/>
 
-                        
 
                     </StackPanel>
                 </StackPanel>

@@ -2,10 +2,8 @@
 using PdfManipulator.PageRangePackage;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using UniPDF_UWP.FileManagement;
 using Windows.Storage;
@@ -14,6 +12,11 @@ using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Windows.Data.Pdf;
+using Windows.Storage.Streams;
+using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Controls.Primitives;
 
 namespace UniPDF_UWP
 {
@@ -30,6 +33,9 @@ namespace UniPDF_UWP
         /// Contains one unprotected file
         /// </summary>
         private ObservableCollection<InternalFile> loadedFileList;
+        private InternalFile loadedFile;
+        private PdfDocument renderDocument;
+        private uint renderedPageNumber = 0;
 
         /// <summary>
         /// PageRange instance for the loaded file: represents the ticked files
@@ -67,13 +73,29 @@ namespace UniPDF_UWP
                     StorageApplicationPermissions.FutureAccessList.AddOrReplace(App.RECENT_FILE_DIRECTORY_TOKEN, parentfolder);
                 }
 
-                InternalFile internalFile = await InternalFile.LoadInternalFileAsync(selectedFile);            
+                InternalFile internalFile = await InternalFile.LoadInternalFileAsync(selectedFile);
                 if (internalFile.Decrypted)
                 {
+                    loadedFile = internalFile;
+                    TotalPageNumber.Text = loadedFile.PageCount.ToString();
+                    selectedPageRange = new PageRange(loadedFile.Document);
+
                     loadedFileList = new ObservableCollection<InternalFile>();
-                    loadedFileList.Add(internalFile);
+                    loadedFileList.Add(loadedFile);
                     loadedFilesView.ItemsSource = loadedFileList;
                     PageRangeInput.Text = String.Empty;
+
+                    // load the file separately for rendering
+                    try
+                    {
+                        renderDocument = await PdfDocument.LoadFromFileAsync(loadedFile.File);
+                        renderedPageNumber = 1;                        
+                        await RenderPageAsync(renderedPageNumber);
+                    }
+                    catch (Exception)
+                    {
+                        rootPage.NotifyUser("Document is not a valid PDF.", NotifyType.ErrorMessage);
+                    }
                 }
                 else
                 {
@@ -89,7 +111,7 @@ namespace UniPDF_UWP
             {
                 SelectPanel.Visibility = Visibility.Collapsed;
             }
-        }     
+        }
 
         private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
@@ -114,7 +136,7 @@ namespace UniPDF_UWP
             StorageFile savedFile = await savePicker.PickSaveFileAsync();
             ExtractAndSaveAsync(outputPageRange, savedFile);
         }
-       
+
         /// <summary>
         /// Saves the pages from the PageRange instance as a new document to the given StorageFile
         /// </summary>
@@ -126,10 +148,10 @@ namespace UniPDF_UWP
                 Stream outputStream = await outputStreamTask;
                 if (outputStream != null)
                 {
-                    PdfAssembler pdfAssembler = new PdfAssembler(outputStream);                    
+                    PdfAssembler pdfAssembler = new PdfAssembler(outputStream);
                     ExportTask task = new ExportTask(outputPageRange);
                     pdfAssembler.AppendTask(task);
-                    pdfAssembler.ExportFile();                  
+                    pdfAssembler.ExportFile();
                 }
                 else
                 {
@@ -154,12 +176,12 @@ namespace UniPDF_UWP
                 selectedPageRange = PageRange.FromPattern(loadedFileList[0].Document, PageRangeInput.Text);
                 PageRangeInvalidLabel.Visibility = Visibility.Collapsed;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 PageRangeInvalidLabel.Visibility = Visibility.Visible;
-                selectedPageRange = null;
             }
-            ControlSaveButtonState();           
+            ControlSaveButtonState();
+            SetToggleButtonState();
         }
 
         private void ControlSaveButtonState()
@@ -190,6 +212,159 @@ namespace UniPDF_UWP
                         SaveButton.IsEnabled = true;
                     }
                 }
+            }
+        }
+
+        private async Task RenderPageAsync(uint pageNumber)
+        {
+            //uint pageNumber;
+            //if (!uint.TryParse(PageNumberBox.Text, out pageNumber) || (pageNumber < 1) || (pageNumber > pdfDocument.PageCount))
+            //{
+            //    rootPage.NotifyUser("Invalid page number.", NotifyType.ErrorMessage);
+            //    return;
+            //}
+
+            // Convert from 1-based page number to 0-based page index.
+            uint pageIndex = pageNumber - 1;
+
+            using (PdfPage page = renderDocument.GetPage(pageIndex))
+            {
+                ScaledRectangle pageDimension = new ScaledRectangle(page.Size.Height, page.Size.Width);
+
+                uint actualWidth = (uint)(PreviewArea.ActualWidth - PreviewBorder.Margin.Left - PreviewBorder.Margin.Right - 4);
+                uint strechedHeight = (uint)pageDimension.GetScaledHeight(actualWidth);
+
+                var options1 = new PdfPageRenderOptions();
+
+                if (strechedHeight > Preview.MaxHeight)
+                {
+                    options1.DestinationHeight = (uint)(Preview.MaxHeight);
+                    options1.DestinationWidth = (uint)(pageDimension.GetScaledWidth(Preview.MaxHeight));
+                    //ToolPage.Current.NotifyUser(page.Size.Height.ToString() + " " + page.Size.Width.ToString() + " " + Preview.MaxHeight.ToString() + " " + options1.DestinationWidth.ToString(), NotifyType.StatusMessage);
+                }
+                else
+                {
+                    options1.DestinationHeight = strechedHeight;
+                    options1.DestinationWidth = actualWidth;
+                    ToolPage.Current.NotifyUser(page.Size.Height.ToString() + " " + page.Size.Width.ToString() + " " + options1.DestinationHeight.ToString() + " " + options1.DestinationWidth, NotifyType.StatusMessage);
+                }
+
+                // update decent border around the previewed page
+                PreviewBorder.Height = options1.DestinationHeight;
+                PreviewBorder.Width = options1.DestinationWidth;
+
+
+                var stream = new InMemoryRandomAccessStream();
+                await page.RenderToStreamAsync(stream, options1);
+
+                BitmapImage src = new BitmapImage();
+                Preview.Source = src;
+
+                await src.SetSourceAsync(stream);
+            }
+        }
+
+        private class ScaledRectangle
+        {
+            public double Height { get; }
+            public double Width { get; }
+
+            public ScaledRectangle(double height, double width)
+            {
+                Height = height;
+                Width = width;
+            }
+
+            public double GetScaledWidth(double height)
+            {
+                return height / Height * Width;
+            }
+
+            public double GetScaledHeight(double width)
+            {
+                return width / Width * Height;
+            }
+        }
+
+        private async void Border_SizeChangedAsync(object sender, SizeChangedEventArgs e)
+        {
+            if (renderDocument != null)
+            {
+                await RenderPageAsync(renderedPageNumber);
+            }
+        }
+
+        private async void PreviousPage_Click(object sender, RoutedEventArgs e)
+        {
+            if (renderedPageNumber > 1)
+            {
+                renderedPageNumber--;
+                await RenderPageAsync(renderedPageNumber);
+                // update tick icon and pagenumber
+                SetToggleButtonState();
+                SetCurrentPageLabel();
+            }
+
+        }
+
+        private async void NextPage_Click(object sender, RoutedEventArgs e)
+        {
+            if (renderedPageNumber < loadedFile.PageCount)
+            {
+                renderedPageNumber++;
+                await RenderPageAsync(renderedPageNumber);
+                // update tick icon and pagenumber
+                SetToggleButtonState();
+                SetCurrentPageLabel();
+            }
+        }
+
+        private void SetToggleButtonState()
+        {
+            if (selectedPageRange.Contains((int)renderedPageNumber))
+            {
+                CurrentPageSelectButton.IsChecked = true;
+            }
+            else
+            {
+                CurrentPageSelectButton.IsChecked = false;
+            }
+        }
+
+        private void SetCurrentPageLabel()
+        {
+            CurrentPageNumber.Foreground = new SolidColorBrush(Windows.UI.Colors.Black);
+            CurrentPageNumber.Text =renderedPageNumber.ToString();
+        }
+
+        private void CurrentPageSelectButton_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleButton button = sender as ToggleButton;
+            if (button.IsChecked ?? false)
+            {
+                selectedPageRange.Add((int) renderedPageNumber);
+            }
+            else
+            {
+                selectedPageRange.Remove((int)renderedPageNumber);
+            }
+            PageRangeInput.Text = selectedPageRange.ToString();
+        }
+
+        private async void CurrentPageNumber_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox inputBox = sender as TextBox;
+            uint pageNumber;
+            if (!uint.TryParse(inputBox.Text, out pageNumber) || (pageNumber < 1) || (pageNumber > loadedFile.PageCount))
+            {
+                inputBox.Foreground = new SolidColorBrush(Windows.UI.Colors.Red); ;
+            }
+            else
+            {                
+                inputBox.Foreground = new SolidColorBrush(Windows.UI.Colors.Black);
+                renderedPageNumber = pageNumber;
+                SetToggleButtonState();
+                await RenderPageAsync(renderedPageNumber);
             }
         }
     }
