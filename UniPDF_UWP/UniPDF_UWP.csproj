@@ -141,6 +141,9 @@
     <Compile Include="ScenarioToolSelection.xaml.cs">
       <DependentUpon>ScenarioToolSelection.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SelectToolPage.xaml.cs">
+      <DependentUpon>SelectToolPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ToolPage.xaml.cs">
       <DependentUpon>ToolPage.xaml</DependentUpon>
     </Compile>
@@ -183,6 +186,8 @@
     <Content Include="Assets\merge2.png" />
     <Content Include="Assets\pdf.png" />
     <Content Include="Assets\remove.png" />
+    <Content Include="Assets\select1.png" />
+    <Content Include="Assets\select2.png" />
     <Content Include="Assets\settings.png" />
     <Content Include="Assets\SplashScreen\SplashScreen.scale-100.png" />
     <Content Include="Assets\SplashScreen\SplashScreen.scale-125.png" />
@@ -256,6 +261,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ScenarioToolSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SelectToolPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -134,6 +134,24 @@ namespace PdfManipulator.PageRangePackage
             }
         }
 
+        /// <summary>
+        /// Returns true if and only if this PageRange instance enumerates all pagenumbers of the referred document.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsEntire()
+        {
+            return this.Count == Document.GetNumberOfPages();
+        }
+
+        /// <summary>
+        /// Return true if and only if this PageRange instance does not enumerate any pagenumbers.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsEmpty()
+        {
+            return this.Count == 0;
+        }
+
         public static PageRange EntireDocument(PdfDocument referredDoc)
         {
             PageRange entireRange = new PageRange(referredDoc);
