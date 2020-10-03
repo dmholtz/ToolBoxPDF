@@ -192,7 +192,7 @@ namespace UniPDF_UWP
                     pdfAssembler.AppendTask(task);
                     pdfAssembler.ExportFileEncrypted(password);
                     loadedFilesList.Remove(source);
-
+                    ToolPage.Current.NotifyUser(String.Empty, NotifyType.StatusMessage);
                 }
                 else
                 {

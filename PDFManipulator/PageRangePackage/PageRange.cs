@@ -30,6 +30,10 @@ namespace PdfManipulator.PageRangePackage
             return base.Add(pageNumber);
         }
 
+        /// <summary>
+        /// Determines how many pages this page range include
+        /// </summary>
+        /// <returns></returns>
         public int GetNumberOfPages()
         {
             return this.Count;

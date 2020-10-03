@@ -17,6 +17,7 @@ using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Controls.Primitives;
+using Microsoft.Toolkit.Uwp.UI.Controls;
 
 namespace UniPDF_UWP
 {
@@ -89,7 +90,7 @@ namespace UniPDF_UWP
                     try
                     {
                         renderDocument = await PdfDocument.LoadFromFileAsync(loadedFile.File);
-                        renderedPageNumber = 1;                        
+                        renderedPageNumber = 1;
                         await RenderPageAsync(renderedPageNumber);
                     }
                     catch (Exception)
@@ -115,17 +116,8 @@ namespace UniPDF_UWP
 
         private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            PageRange outputPageRange;
-            if (SelectionOptions.SelectedIndex == 0)
-            {
-                // extract option
-                outputPageRange = selectedPageRange;
-            }
-            else
-            {
-                // remove option
-                outputPageRange = selectedPageRange.Invert();
-            }
+            PageRange outputPageRange = GetOutputPageRange();
+
             var savePicker = new FileSavePicker();
             savePicker.FileTypeChoices.Add("PDF-Document", new List<String>() { ".pdf" });
             savePicker.SuggestedFileName = loadedFileList[0].FileName.Replace(".pdf", "-extracted.pdf");
@@ -166,8 +158,12 @@ namespace UniPDF_UWP
 
         private void SelectionOptions_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ControlSaveButtonState();
-        }
+            if (selectedPageRange != null)
+            {
+                ControlSaveButtonState();
+                ShowSummary();
+            }
+        }            
 
         private void PageRange_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -182,6 +178,7 @@ namespace UniPDF_UWP
             }
             ControlSaveButtonState();
             SetToggleButtonState();
+            ShowSummary();
         }
 
         private void ControlSaveButtonState()
@@ -217,13 +214,6 @@ namespace UniPDF_UWP
 
         private async Task RenderPageAsync(uint pageNumber)
         {
-            //uint pageNumber;
-            //if (!uint.TryParse(PageNumberBox.Text, out pageNumber) || (pageNumber < 1) || (pageNumber > pdfDocument.PageCount))
-            //{
-            //    rootPage.NotifyUser("Invalid page number.", NotifyType.ErrorMessage);
-            //    return;
-            //}
-
             // Convert from 1-based page number to 0-based page index.
             uint pageIndex = pageNumber - 1;
 
@@ -261,28 +251,6 @@ namespace UniPDF_UWP
                 Preview.Source = src;
 
                 await src.SetSourceAsync(stream);
-            }
-        }
-
-        private class ScaledRectangle
-        {
-            public double Height { get; }
-            public double Width { get; }
-
-            public ScaledRectangle(double height, double width)
-            {
-                Height = height;
-                Width = width;
-            }
-
-            public double GetScaledWidth(double height)
-            {
-                return height / Height * Width;
-            }
-
-            public double GetScaledHeight(double width)
-            {
-                return width / Width * Height;
             }
         }
 
@@ -333,8 +301,9 @@ namespace UniPDF_UWP
 
         private void SetCurrentPageLabel()
         {
+            ToolPage.Current.NotifyUser(String.Empty, NotifyType.StatusMessage);
             CurrentPageNumber.Foreground = new SolidColorBrush(Windows.UI.Colors.Black);
-            CurrentPageNumber.Text =renderedPageNumber.ToString();
+            CurrentPageNumber.Text = renderedPageNumber.ToString();
         }
 
         private void CurrentPageSelectButton_Click(object sender, RoutedEventArgs e)
@@ -342,13 +311,14 @@ namespace UniPDF_UWP
             ToggleButton button = sender as ToggleButton;
             if (button.IsChecked ?? false)
             {
-                selectedPageRange.Add((int) renderedPageNumber);
+                selectedPageRange.Add((int)renderedPageNumber);
             }
             else
             {
                 selectedPageRange.Remove((int)renderedPageNumber);
             }
             PageRangeInput.Text = selectedPageRange.ToString();
+            ShowSummary();
         }
 
         private async void CurrentPageNumber_TextChanged(object sender, TextChangedEventArgs e)
@@ -360,11 +330,68 @@ namespace UniPDF_UWP
                 inputBox.Foreground = new SolidColorBrush(Windows.UI.Colors.Red); ;
             }
             else
-            {                
+            {
                 inputBox.Foreground = new SolidColorBrush(Windows.UI.Colors.Black);
                 renderedPageNumber = pageNumber;
                 SetToggleButtonState();
                 await RenderPageAsync(renderedPageNumber);
+            }
+        }
+
+        private PageRange GetOutputPageRange()
+        {
+            PageRange outputPageRange;
+            if (SelectionOptions.SelectedIndex == 0)
+            {
+                // extract option
+                outputPageRange = selectedPageRange;
+            }
+            else
+            {
+                // remove option
+                outputPageRange = selectedPageRange.Invert();
+            }
+            return outputPageRange;
+        }
+
+        private void ShowSummary()
+        {
+            PageRange outputPageRange = GetOutputPageRange();
+            int numberOfPages = outputPageRange.GetNumberOfPages();
+            if (numberOfPages == 0)
+            {
+                SummaryText.Text = "No pages are extracted.";
+            }
+            else if (numberOfPages == 1)
+            {
+                SummaryText.Text = "1 page is extracted.";
+            }
+            else
+            {
+                SummaryText.Text = numberOfPages.ToString()+ " pages are extracted.";
+            }
+            ToolPage.Current.NotifyUser(String.Empty, NotifyType.StatusMessage);
+        }
+
+        private class ScaledRectangle
+        {
+            public double Height { get; }
+            public double Width { get; }
+
+            public ScaledRectangle(double height, double width)
+            {
+                Height = height;
+                Width = width;
+            }
+
+            public double GetScaledWidth(double height)
+            {
+                return height / Height * Width;
+            }
+
+            public double GetScaledHeight(double width)
+            {
+                return width / Width * Height;
             }
         }
     }

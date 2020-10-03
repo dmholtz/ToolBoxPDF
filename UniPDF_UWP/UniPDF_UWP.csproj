@@ -135,8 +135,8 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleConfiguration.cs" />
-    <Compile Include="ScenarioLegalNotes.xaml.cs">
-      <DependentUpon>ScenarioLegalNotes.xaml</DependentUpon>
+    <Compile Include="ScenarioAboutPage.xaml.cs">
+      <DependentUpon>ScenarioAboutPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ScenarioToolSelection.xaml.cs">
       <DependentUpon>ScenarioToolSelection.xaml</DependentUpon>
@@ -256,7 +256,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ScenarioLegalNotes.xaml">
+    <Page Include="ScenarioAboutPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -284,6 +284,9 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.9</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Controls">
+      <Version>6.1.1</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PDFManipulator\PDFManipulator.csproj">
@@ -295,6 +298,7 @@
     <None Include="Assets\PDF.xcf" />
     <None Include="Assets\ToolBoxPDF.xcf" />
     <None Include="Assets\ToolBoxPDF_Padding.xcf" />
+    <Content Include="MarkdownAssets\AboutPage.md" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
