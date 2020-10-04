@@ -54,6 +54,9 @@ namespace UniPDF_UWP
                     case Tool.Decrypt:
                         ToolFrame.Navigate(typeof(DecryptToolPage));
                         break;
+                    case Tool.FutureFeatures:
+                        ToolFrame.Navigate(typeof(FutureFeaturesFrame));
+                        break;
                     default:
                         NotifyUser("Navigation Error occurred: Unable to navigate to the desired tool frame.", NotifyType.ErrorMessage);
                         break;

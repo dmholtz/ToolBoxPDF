@@ -93,7 +93,7 @@
 
                         <TextBlock Text="Summary" Style="{StaticResource SubtitleTextBlockStyle}"/>
                         <TextBlock x:Name="SummaryText" Text="No pages will be extracted" TextWrapping="WrapWholeWords" />
-                        <Button x:Name="SaveButton" Margin ="15,10,0,10" Content="Save Documnet" HorizontalAlignment="Left" Click="SaveButton_Click" IsEnabled="False"/>
+                        <Button x:Name="SaveButton" Margin ="15,10,0,10" Content="Save Document" HorizontalAlignment="Left" Click="SaveButton_Click" IsEnabled="False"/>
 
 
                     </StackPanel>

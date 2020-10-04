@@ -6,12 +6,12 @@ namespace UniPDF_UWP
 {
     public sealed partial class MainPage : Page
     {
-        public const string APP_NAME = "UniversalPDF";
+        public const string APP_NAME = "ToolBox PDF";
 
         List<Scenario> scenarios = new List<Scenario>()
         {
-            new Scenario() {Title =  "Tools", ClassType = typeof(ScenarioToolSelection) },
-            new Scenario() {Title = "Legal Notes", ClassType = typeof(ScenarioLegalNotes)},
+            new Scenario() {Title =  "ToolBox", ClassType = typeof(ScenarioToolSelection) },
+            new Scenario() {Title = "About this App", ClassType = typeof(ScenarioAboutPage)},
         };
     }
 
