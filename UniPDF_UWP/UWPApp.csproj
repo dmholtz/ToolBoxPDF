@@ -119,21 +119,21 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DecryptToolPage.xaml.cs">
-      <DependentUpon>DecryptToolPage.xaml</DependentUpon>
+    <Compile Include="ToolFrames\DecryptToolFrame.xaml.cs">
+      <DependentUpon>DecryptToolFrame.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EncryptToolPage.xaml.cs">
+    <Compile Include="ToolFrames\EncryptToolPage.xaml.cs">
       <DependentUpon>EncryptToolPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FileManagement\InternalFile.cs" />
-    <Compile Include="FileManagement\FileSize.cs" />
-    <Compile Include="FutureFeaturesFrame.xaml.cs">
+    <Compile Include="FileIO\InternalFile.cs" />
+    <Compile Include="FileIO\FileSize.cs" />
+    <Compile Include="ToolFrames\FutureFeaturesFrame.xaml.cs">
       <DependentUpon>FutureFeaturesFrame.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MergeToolPage.xaml.cs">
+    <Compile Include="ToolFrames\MergeToolPage.xaml.cs">
       <DependentUpon>MergeToolPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -144,7 +144,7 @@
     <Compile Include="ScenarioToolSelection.xaml.cs">
       <DependentUpon>ScenarioToolSelection.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SelectToolPage.xaml.cs">
+    <Compile Include="ToolFrames\SelectToolPage.xaml.cs">
       <DependentUpon>SelectToolPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ToolPage.xaml.cs">
@@ -243,15 +243,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="DecryptToolPage.xaml">
+    <Page Include="ToolFrames\DecryptToolFrame.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="EncryptToolPage.xaml">
+    <Page Include="ToolFrames\EncryptToolPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="FutureFeaturesFrame.xaml">
+    <Page Include="ToolFrames\FutureFeaturesFrame.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -259,7 +259,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="MergeToolPage.xaml">
+    <Page Include="ToolFrames\MergeToolPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -271,7 +271,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SelectToolPage.xaml">
+    <Page Include="ToolFrames\SelectToolPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -296,9 +296,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PDFManipulator\PDFManipulator.csproj">
+    <ProjectReference Include="..\PDFManipulator\Core.csproj">
       <Project>{F24A459D-5908-496B-A300-B4EA1F34C858}</Project>
-      <Name>PDFManipulator</Name>
+      <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

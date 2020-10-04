@@ -1,10 +1,10 @@
 ﻿using iText.Kernel.Pdf;
-using PdfManipulator.PageRangePackage;
+using ToolBoxPDF.Core.PageRangePackage;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace PdfManipulator.PdfIOUtilities
+namespace ToolBoxPDF.Core.IO
 {
     public class PdfAssembler
     {

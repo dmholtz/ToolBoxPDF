@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PdfManipulator.PdfIOUtilities
+namespace ToolBoxPDF.Core.IO
 {
     public interface IPageTransformation
     {

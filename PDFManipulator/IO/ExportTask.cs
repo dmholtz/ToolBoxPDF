@@ -1,8 +1,8 @@
-﻿using PdfManipulator.PageRangePackage;
+﻿using ToolBoxPDF.Core.PageRangePackage;
 using System;
 using System.Collections.Generic;
 
-namespace PdfManipulator.PdfIOUtilities
+namespace ToolBoxPDF.Core.IO
 {
     /// <summary>
     /// ExportTask bundles a PangeRange instance and a list of transforms which are applied to the every page of the selection.

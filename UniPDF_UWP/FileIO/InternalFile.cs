@@ -1,11 +1,10 @@
 ﻿using iText.Kernel.Pdf;
 using System;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 
-namespace UniPDF_UWP.FileManagement
+namespace UWPApp.FileIO
 {
     /// <summary>
     /// Internal representation of a Pdf File: 

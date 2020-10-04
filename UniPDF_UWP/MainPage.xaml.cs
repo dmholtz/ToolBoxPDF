@@ -7,7 +7,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-namespace UniPDF_UWP
+namespace UWPApp
 {
     /// <summary>
     /// Main page of the application: header, notification area (footer), menu (left-hand side) and scenario view (right-hand side)

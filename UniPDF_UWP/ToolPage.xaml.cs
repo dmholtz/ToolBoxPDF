@@ -1,11 +1,12 @@
 ﻿using System;
+using UWPApp.ToolFrames;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-namespace UniPDF_UWP
+namespace UWPApp
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.

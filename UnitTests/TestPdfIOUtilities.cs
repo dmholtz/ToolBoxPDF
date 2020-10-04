@@ -4,11 +4,10 @@ using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
 using NUnit.Framework;
-
-using PdfManipulator.PageRangePackage;
-using PdfManipulator.PdfIOUtilities;
 using System.Collections.Generic;
 using System.IO;
+using ToolBoxPDF.Core.IO;
+using ToolBoxPDF.Core.PageRangePackage;
 
 namespace UnitTests
 {

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PdfManipulator.PageRangePackage
+namespace ToolBoxPDF.Core.PageRangePackage
 {
     /// <summary>
     /// Represents a set of pages of a PdfDocument. Pages are identified by their pagenumber

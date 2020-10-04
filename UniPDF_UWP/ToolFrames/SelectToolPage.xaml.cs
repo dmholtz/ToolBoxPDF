@@ -1,11 +1,8 @@
-﻿using PdfManipulator.PdfIOUtilities;
-using PdfManipulator.PageRangePackage;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
-using UniPDF_UWP.FileManagement;
 using Windows.Storage;
 using Windows.Storage.AccessCache;
 using Windows.Storage.Pickers;
@@ -17,9 +14,11 @@ using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Controls.Primitives;
-using Microsoft.Toolkit.Uwp.UI.Controls;
+using UWPApp.FileIO;
+using ToolBoxPDF.Core.PageRangePackage;
+using ToolBoxPDF.Core.IO;
 
-namespace UniPDF_UWP
+namespace UWPApp.ToolFrames
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.

@@ -5,7 +5,7 @@ using Windows.System;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
-namespace UniPDF_UWP
+namespace UWPApp.ToolFrames
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
@@ -35,7 +35,7 @@ namespace UniPDF_UWP
         {
             var uri = new Uri("ms-appx:///MarkdownAssets/UpcomingFeatures.md", UriKind.RelativeOrAbsolute);
             var file = await StorageFile.GetFileFromApplicationUriAsync(uri);
-            var lines = await FileIO.ReadTextAsync(file);
+            var lines = await Windows.Storage.FileIO.ReadTextAsync(file);
             MarkdownContent.Text = lines;
         }
 

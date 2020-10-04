@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-namespace UniPDF_UWP
+namespace UWPApp
 {
     /// <summary>
     /// Scenario: Tool Selection

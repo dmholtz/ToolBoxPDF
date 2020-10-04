@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Windows.UI.Xaml.Controls;
 
-namespace UniPDF_UWP
+namespace UWPApp
 {
     public sealed partial class MainPage : Page
     {

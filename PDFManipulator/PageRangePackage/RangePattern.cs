@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace PdfManipulator.PageRangePackage
+namespace ToolBoxPDF.Core.PageRangePackage
 {
     /// <summary>
     /// This class represents a pattern by which a range of page numbers can be textually represented

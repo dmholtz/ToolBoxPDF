@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PDFManipulator\PDFManipulator.csproj" />
+    <ProjectReference Include="..\PDFManipulator\Core.csproj" />
   </ItemGroup>
 
 </Project>
