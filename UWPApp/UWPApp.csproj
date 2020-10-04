@@ -296,12 +296,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PDFManipulator\Core.csproj">
-      <Project>{F24A459D-5908-496B-A300-B4EA1F34C858}</Project>
-      <Name>Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Assets\PDF.xcf" />
     <None Include="Assets\ToolBoxPDF.xcf" />
     <None Include="Assets\ToolBoxPDF_Padding.xcf" />
