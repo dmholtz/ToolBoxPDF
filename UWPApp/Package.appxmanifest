@@ -8,8 +8,8 @@
 
   <Identity
     Name="ToolBox-PDF-UWP"
-    Publisher="CN=David"
-    Version="1.0.1.0" />
+    Publisher="CN=dmholtz"
+    Version="1.1.1.0" />
 
   <mp:PhoneIdentity PhoneProductId="5e8543c3-aaae-499d-8a8b-6fc00456f188" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
