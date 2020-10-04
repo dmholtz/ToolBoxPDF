@@ -4,7 +4,7 @@ using iText.Layout.Element;
 using iText.Layout.Properties;
 using NUnit.Framework;
 
-using PdfManipulator.PageRangePackage;
+using ToolBoxPDF.Core.PageRangePackage;
 using System.Collections.Generic;
 
 namespace UnitTests
