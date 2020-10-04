@@ -24,7 +24,7 @@
 
             <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
                 <controls:MarkdownTextBlock x:Name="MarkdownContent"
-                                  Margin="6" Padding="5" />
+                                  Margin="6" Padding="5" LinkClicked="MarkdownContent_LinkClicked" />
             </ScrollViewer>
         </Grid>
     </Grid>

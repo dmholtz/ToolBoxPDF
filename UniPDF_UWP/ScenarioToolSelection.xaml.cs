@@ -27,7 +27,7 @@ namespace UniPDF_UWP
             tools.Add(new ToolDefinitionWrapper(Tool.Select, "Select pages", "Crimson", "Assets\\select1.png"));
             tools.Add(new ToolDefinitionWrapper(Tool.Encrypt, "Encryption Tool", "Crimson", "Assets\\encrypt.png"));        
             tools.Add(new ToolDefinitionWrapper(Tool.Decrypt, "Remove Password", "Crimson", "Assets\\decrypt.png"));
-            tools.Add(new ToolDefinitionWrapper(Tool.Split, "Split PDF", "Crimson", "Assets\\split.png"));       
+            //tools.Add(new ToolDefinitionWrapper(Tool.Split, "Split PDF", "Crimson", "Assets\\split.png"));       
             tools.Add(new ToolDefinitionWrapper(Tool.FutureFeatures, "Upcoming Features", "Crimson", "Assets\\upcoming.png"));
         }
 
