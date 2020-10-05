@@ -25,6 +25,7 @@ namespace UWPApp
             tools = new HashSet<ToolDefinitionWrapper>(MAX_NUMBER_OF_FEATURES);
             tools.Add(new ToolDefinitionWrapper(Tool.Merge, "Merge PDFs", "Crimson", "Assets\\merge2.png")); // #0077b3
             tools.Add(new ToolDefinitionWrapper(Tool.Select, "Select pages", "Crimson", "Assets\\select1.png"));
+            tools.Add(new ToolDefinitionWrapper(Tool.Rotate, "Rotate pages", "Crimson", "Assets\\rotate.png"));
             tools.Add(new ToolDefinitionWrapper(Tool.Encrypt, "Encryption Tool", "Crimson", "Assets\\encrypt.png"));        
             tools.Add(new ToolDefinitionWrapper(Tool.Decrypt, "Remove Password", "Crimson", "Assets\\decrypt.png"));
             //tools.Add(new ToolDefinitionWrapper(Tool.Split, "Split PDF", "Crimson", "Assets\\split.png"));       
@@ -90,6 +91,7 @@ namespace UWPApp
         Merge,
         Split,
         Select,
+        Rotate,
         FutureFeatures,
         Decrypt,
         Encrypt

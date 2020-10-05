@@ -32,7 +32,7 @@
                                    RelativePanel.Above="LinksPanel" Margin="10,10,0,0"
                                    TextWrapping="Wrap"/>
                         <StackPanel x:Name="LinksPanel" Orientation="Vertical" Margin="10,10,0,10">
-                            <HyperlinkButton Content="Git Repository" Tag="https://github.com/dmholtz/UniversalPDF/" Click="Hyperlink_Click" FontSize="12" Style="{StaticResource HyperlinkStyle}" />
+                            <HyperlinkButton Content="Git Repository" Tag="https://github.com/dmholtz/ToolBoxPDF/" Click="Hyperlink_Click" FontSize="12" Style="{StaticResource HyperlinkStyle}" />
                             <HyperlinkButton x:Name="CreatorLink" Content="Visit Creator on GitHub" Tag="https://github.com/dmholtz" Click="Hyperlink_Click" FontSize="12" Style="{StaticResource HyperlinkStyle}"/>
                         </StackPanel>
                     </StackPanel>
