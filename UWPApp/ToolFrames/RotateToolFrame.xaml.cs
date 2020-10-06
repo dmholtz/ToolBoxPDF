@@ -90,6 +90,7 @@ namespace UWPApp.ToolFrames
                     {
                         renderDocument = await PdfDocument.LoadFromFileAsync(loadedFile.File);
                         renderedPageNumber = 1;
+                        SetCurrentPageLabel();
                         await RenderPageAsync(renderedPageNumber);
                     }
                     catch (Exception)
@@ -163,43 +164,84 @@ namespace UWPApp.ToolFrames
             uint pageIndex = pageNumber - 1;
 
             using (PdfPage page = renderDocument.GetPage(pageIndex))
-            {
-                ScaledRectangle pageDimension = new ScaledRectangle(page.Size.Height, page.Size.Width);
-
-                uint actualWidth = (uint)(PreviewArea.ActualWidth - PreviewBorder.Margin.Left - PreviewBorder.Margin.Right - 4);
-                uint strechedHeight = (uint)pageDimension.GetScaledHeight(actualWidth);
-
+            {               
                 var options1 = new PdfPageRenderOptions();
+                options1.BackgroundColor = Windows.UI.Color.FromArgb(20, 40, 0, 0);
+                uint actualWidth = (uint)(PreviewArea.ActualWidth - PreviewBorder.Margin.Left - PreviewBorder.Margin.Right - 4);
+                ScaledRectangle displayedPageDimension;
+                Vector3 cp;
 
-                if (strechedHeight > Preview.MaxHeight)
+                
+                if (rotations[(int)pageIndex].DegAngle % 180 == 0)
+                {
+                    // Raw page orientation matches displayed page orientation
+                    displayedPageDimension = new ScaledRectangle(page.Size.Height, page.Size.Width);
+                }
+                else
+                {
+                    // Raw page orientation does not match the displayed page orientation
+                    displayedPageDimension = new ScaledRectangle(page.Size.Width, page.Size.Height);
+                }
+
+                uint stretchedHeight = (uint)displayedPageDimension.GetScaledHeight(actualWidth);
+                if (stretchedHeight > Preview.MaxHeight)
                 {
                     options1.DestinationHeight = (uint)(Preview.MaxHeight);
-                    options1.DestinationWidth = (uint)(pageDimension.GetScaledWidth(Preview.MaxHeight));
+                    options1.DestinationWidth = (uint)(displayedPageDimension.GetScaledWidth(Preview.MaxHeight));
                     //ToolPage.Current.NotifyUser(page.Size.Height.ToString() + " " + page.Size.Width.ToString() + " " + Preview.MaxHeight.ToString() + " " + options1.DestinationWidth.ToString(), NotifyType.StatusMessage);
                 }
                 else
                 {
-                    options1.DestinationHeight = strechedHeight;
+                    options1.DestinationHeight = stretchedHeight;
                     options1.DestinationWidth = actualWidth;
-                    ToolPage.Current.NotifyUser(page.Size.Height.ToString() + " " + page.Size.Width.ToString() + " " + options1.DestinationHeight.ToString() + " " + options1.DestinationWidth, NotifyType.StatusMessage);
+                    //ToolPage.Current.NotifyUser(options1.DestinationHeight.ToString() + " " + options1.DestinationWidth, NotifyType.StatusMessage);
                 }
 
                 // update decent border around the previewed page
                 PreviewBorder.Height = options1.DestinationHeight;
                 PreviewBorder.Width = options1.DestinationWidth;
 
+                if (rotations[(int)pageIndex].DegAngle % 180 == 0)
+                {
+                    // Raw page orientation matches displayed page orientation
+                    cp = new Vector3((float)PreviewBorder.Width / 2, (float)PreviewBorder.Height / 2, 0);                    
+                    Preview.Translation = new Vector3(0, 0, 0);
+
+                    Preview.Width = PreviewBorder.Width;
+                    Preview.Height = PreviewBorder.Height;
+                }
+                else
+                {
+                    // Raw page orientation does not match the displayed page orientation
+                    var temp = options1.DestinationHeight;
+                    options1.DestinationHeight = options1.DestinationWidth;
+                    options1.DestinationWidth = temp;
+
+                    if (rotations[(int)pageIndex].DegAngle == 90)
+                    {
+                        Preview.Translation = new Vector3((float) PreviewBorder.Height, 0, 0);
+                    }
+                    else if (rotations[(int)pageIndex].DegAngle == -90)
+                    {
+                        Preview.Translation = new Vector3(0, (float)PreviewBorder.Height, 0);
+                    }
+
+                    Preview.Width = PreviewBorder.Width;
+                    Preview.Height = PreviewBorder.Height;                      
+
+                cp = PreviewBorder.CenterPoint;
+                }
+
 
                 var stream = new InMemoryRandomAccessStream();
                 await page.RenderToStreamAsync(stream, options1);
 
                 BitmapImage src = new BitmapImage();
-                Preview.Source = src;
-                Vector3 cp = new Vector3((float) PreviewBorder.Width / 2, (float) PreviewBorder.Height / 2, 0);
-                //Preview.CenterPoint = cp;
-                Preview.Rotation = rotations[(int)pageIndex].DegAngle;
-                ToolPage.Current.NotifyUser(Preview.CenterPoint.ToString(), NotifyType.StatusMessage);
                 await src.SetSourceAsync(stream);
+                Preview.Source = src;
                 Preview.CenterPoint = cp;
+                Preview.Rotation = rotations[(int)pageIndex].DegAngle;
+                ToolPage.Current.NotifyUser(Preview.Width.ToString() + " " + PreviewBorder.Width.ToString() + " " + options1.DestinationWidth.ToString() +" "+ Preview.Height.ToString() + " " + PreviewBorder.Height.ToString() +" " + options1.DestinationHeight.ToString(), NotifyType.StatusMessage);
             }
         }
 
