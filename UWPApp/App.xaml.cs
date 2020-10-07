@@ -22,7 +22,7 @@ namespace UWPApp
         {
             this.InitializeComponent();
             this.Construct();
-            this.RequestedTheme = ApplicationTheme.Light;
+            this.RequestedTheme = ApplicationTheme.Dark;
         }
 
         /// <summary>

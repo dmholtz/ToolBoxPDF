@@ -16,7 +16,7 @@ using Windows.UI.Xaml.Media;
 using UWPApp.FileIO;
 using ToolBoxPDF.Core.PageRangePackage;
 using ToolBoxPDF.Core.IO;
-using System.Numerics;
+using iText.Kernel.XMP.Options;
 
 namespace UWPApp.ToolFrames
 {
@@ -144,7 +144,7 @@ namespace UWPApp.ToolFrames
                         int pageNumber = i + 1;
                         ExportTask task = new ExportTask(PageRange.FromPattern(loadedFile.Document, pageNumber.ToString()), new PageRotation(orientations[i]));
                         pdfAssembler.AppendTask(task);
-                    }                                                        
+                    }
                     pdfAssembler.ExportFile();
                 }
                 else
@@ -164,14 +164,12 @@ namespace UWPApp.ToolFrames
             uint pageIndex = pageNumber - 1;
 
             using (PdfPage page = renderDocument.GetPage(pageIndex))
-            {               
+            {
                 var options1 = new PdfPageRenderOptions();
-                options1.BackgroundColor = Windows.UI.Color.FromArgb(20, 40, 0, 0);
+                options1.BackgroundColor = Windows.UI.Colors.Transparent;
                 uint actualWidth = (uint)(PreviewArea.ActualWidth - PreviewBorder.Margin.Left - PreviewBorder.Margin.Right - 4);
                 ScaledRectangle displayedPageDimension;
-                Vector3 cp;
 
-                
                 if (rotations[(int)pageIndex].DegAngle % 180 == 0)
                 {
                     // Raw page orientation matches displayed page orientation
@@ -184,54 +182,21 @@ namespace UWPApp.ToolFrames
                 }
 
                 uint stretchedHeight = (uint)displayedPageDimension.GetScaledHeight(actualWidth);
-                if (stretchedHeight > Preview.MaxHeight)
+                var maxHeight = Preview.MaxHeight;
+                if (stretchedHeight > maxHeight)
                 {
-                    options1.DestinationHeight = (uint)(Preview.MaxHeight);
-                    options1.DestinationWidth = (uint)(displayedPageDimension.GetScaledWidth(Preview.MaxHeight));
-                    //ToolPage.Current.NotifyUser(page.Size.Height.ToString() + " " + page.Size.Width.ToString() + " " + Preview.MaxHeight.ToString() + " " + options1.DestinationWidth.ToString(), NotifyType.StatusMessage);
+                    options1.DestinationHeight = (uint)(maxHeight);
+                    options1.DestinationWidth = (uint)(displayedPageDimension.GetScaledWidth(maxHeight));
                 }
                 else
                 {
                     options1.DestinationHeight = stretchedHeight;
                     options1.DestinationWidth = actualWidth;
-                    //ToolPage.Current.NotifyUser(options1.DestinationHeight.ToString() + " " + options1.DestinationWidth, NotifyType.StatusMessage);
                 }
 
                 // update decent border around the previewed page
                 PreviewBorder.Height = options1.DestinationHeight;
                 PreviewBorder.Width = options1.DestinationWidth;
-
-                if (rotations[(int)pageIndex].DegAngle % 180 == 0)
-                {
-                    // Raw page orientation matches displayed page orientation
-                    cp = new Vector3((float)PreviewBorder.Width / 2, (float)PreviewBorder.Height / 2, 0);                    
-                    Preview.Translation = new Vector3(0, 0, 0);
-
-                    Preview.Width = PreviewBorder.Width;
-                    Preview.Height = PreviewBorder.Height;
-                }
-                else
-                {
-                    // Raw page orientation does not match the displayed page orientation
-                    var temp = options1.DestinationHeight;
-                    options1.DestinationHeight = options1.DestinationWidth;
-                    options1.DestinationWidth = temp;
-
-                    if (rotations[(int)pageIndex].DegAngle == 90)
-                    {
-                        Preview.Translation = new Vector3((float) PreviewBorder.Height, 0, 0);
-                    }
-                    else if (rotations[(int)pageIndex].DegAngle == -90)
-                    {
-                        Preview.Translation = new Vector3(0, (float)PreviewBorder.Height, 0);
-                    }
-
-                    Preview.Width = PreviewBorder.Width;
-                    Preview.Height = PreviewBorder.Height;                      
-
-                cp = PreviewBorder.CenterPoint;
-                }
-
 
                 var stream = new InMemoryRandomAccessStream();
                 await page.RenderToStreamAsync(stream, options1);
@@ -239,9 +204,39 @@ namespace UWPApp.ToolFrames
                 BitmapImage src = new BitmapImage();
                 await src.SetSourceAsync(stream);
                 Preview.Source = src;
-                Preview.CenterPoint = cp;
-                Preview.Rotation = rotations[(int)pageIndex].DegAngle;
-                ToolPage.Current.NotifyUser(Preview.Width.ToString() + " " + PreviewBorder.Width.ToString() + " " + options1.DestinationWidth.ToString() +" "+ Preview.Height.ToString() + " " + PreviewBorder.Height.ToString() +" " + options1.DestinationHeight.ToString(), NotifyType.StatusMessage);
+
+                RotateTransform rotationTransform = new RotateTransform()
+                {
+                    Angle = rotations[(int)pageIndex].DegAngle,
+                    CenterX = (PreviewBorder.Width-4) / 2,
+                    CenterY = (PreviewBorder.Height-4) / 2
+                };
+
+                ScaleTransform scaleTransform;
+                if (rotations[(int)pageIndex].DegAngle % 180 == 0)
+                {
+                    scaleTransform = new ScaleTransform()
+                    {
+                        ScaleX = 1,
+                        ScaleY = 1,
+                    };
+                }
+                else
+                {
+                    scaleTransform = new ScaleTransform()
+                    {
+                        CenterX = (PreviewBorder.Width - 4) / 2,
+                        CenterY = (PreviewBorder.Height - 4) / 2,
+                        ScaleX = displayedPageDimension.AspectRatio,
+                        ScaleY = 1 / displayedPageDimension.AspectRatio,
+                    };
+                }
+
+                TransformGroup renderTransform = new TransformGroup();
+                renderTransform.Children.Add(rotationTransform);
+                renderTransform.Children.Add(scaleTransform);
+
+                Preview.RenderTransform = renderTransform;                
             }
         }
 
@@ -294,20 +289,26 @@ namespace UWPApp.ToolFrames
             else
             {
                 inputBox.Foreground = new SolidColorBrush(Windows.UI.Colors.Black);
-                renderedPageNumber = pageNumber;            
+                renderedPageNumber = pageNumber;
                 await RenderPageAsync(renderedPageNumber);
             }
-        }      
+        }
 
         private class ScaledRectangle
         {
             public double Height { get; }
             public double Width { get; }
 
+            /// <summary>
+            /// Aspect Ratio of the rectangle: Width / Height
+            /// </summary>
+            public double AspectRatio { get; }
+
             public ScaledRectangle(double height, double width)
             {
                 Height = height;
                 Width = width;
+                AspectRatio = width / height;
             }
 
             public double GetScaledWidth(double height)
@@ -324,7 +325,7 @@ namespace UWPApp.ToolFrames
         private async void RotateButton_Click(object sender, RoutedEventArgs e)
         {
             int pageIndex = (int)renderedPageNumber - 1;
-            rotations[pageIndex]++;            
+            rotations[pageIndex]++;
             await RenderPageAsync(renderedPageNumber);
         }
 
@@ -335,7 +336,7 @@ namespace UWPApp.ToolFrames
         private void SetDefaultOrientation()
         {
             rotations = new List<PageOrientation>();
-            for(int i = 0; i < loadedFile.PageCount; i++)
+            for (int i = 0; i < loadedFile.PageCount; i++)
             {
                 rotations.Add(PageOrientation.NoRotation());
             }
