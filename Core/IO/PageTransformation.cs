@@ -1,9 +1,5 @@
-﻿using iText.IO.Font.Otf;
-using iText.Kernel.Pdf;
-using Org.BouncyCastle.Crypto.Modes.Gcm;
+﻿using iText.Kernel.Pdf;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ToolBoxPDF.Core.IO
 {
@@ -25,7 +21,7 @@ namespace ToolBoxPDF.Core.IO
             transform = page => page.SetRotation(degAngle);
         }
 
-        public PageRotation(PageOrientation orientation) : this((int)orientation) { }
+        public PageRotation(PageOrientation orientation) : this(orientation.DegAngle) { }
 
         public void Transform(PdfPage page)
         {
@@ -33,11 +29,48 @@ namespace ToolBoxPDF.Core.IO
         }
     }
 
-    public enum PageOrientation
+    public class PageOrientation
     {
-        NoRotation = 0,
-        RotateLeft = -90,
-        RotateRight = 90,
-        UpsideDown = 180
+        public int DegAngle { get; private set; }
+
+        private PageOrientation(int degAngle)
+        {
+            DegAngle = degAngle;
+        }
+
+        /// <summary>
+        /// Rotates the pageOrientation instance clockwise.
+        /// </summary>
+        /// <param name="pageOrientation"></param>
+        /// <returns></returns>
+        public static PageOrientation operator ++(PageOrientation pageOrientation)
+        {
+            pageOrientation.DegAngle += 90;
+            if (pageOrientation.DegAngle > 180)
+            {
+                pageOrientation.DegAngle -= 360;
+            }
+            return pageOrientation;
+        }
+
+        public static PageOrientation NoRotation()
+        {
+            return new PageOrientation(0);
+        }
+
+        public static PageOrientation RotateLeft()
+        {
+            return new PageOrientation(-90);
+        }
+
+        public static PageOrientation RotateRight()
+        {
+            return new PageOrientation(90);
+        }
+
+        public static PageOrientation UpsideDown()
+        {
+            return new PageOrientation(180);
+        }
     }
 }

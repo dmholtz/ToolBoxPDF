@@ -151,16 +151,8 @@ namespace UWPApp.ToolFrames
         }
 
         private void loadedFilesView_DragItemsCompleted(ListViewBase sender, DragItemsCompletedEventArgs args)
-        {
-
-            StringBuilder s = new StringBuilder();
-            foreach (var item in loadedFilesView.Items)
-            {
-                var file = (InternalFile)item;
-                s.Append(file.FileName + " ");
-            }
-
-            ToolPage.Current.NotifyUser(s.ToString(), NotifyType.StatusMessage);
+        {          
+            ToolPage.Current.NotifyUser(String.Empty, NotifyType.StatusMessage);
         }
 
         private async void MergeButton_Click(object sender, RoutedEventArgs e)

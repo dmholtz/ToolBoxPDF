@@ -98,10 +98,10 @@ namespace UnitTests
 
             List<ExportTask> exportTasks = new List<ExportTask>();
 
-            exportTasks.Add(new ExportTask(relevantPages[0], new List<IPageTransformation>() { new PageRotation(PageOrientation.RotateLeft) }));
-            exportTasks.Add(new ExportTask(relevantPages[1], new List<IPageTransformation>() { new PageRotation(PageOrientation.UpsideDown) }));
-            exportTasks.Add(new ExportTask(relevantPages[2], new PageRotation(PageOrientation.RotateRight)));
-            exportTasks.Add(new ExportTask(relevantPages[3], new PageRotation(PageOrientation.NoRotation)));
+            exportTasks.Add(new ExportTask(relevantPages[0], new List<IPageTransformation>() { new PageRotation(PageOrientation.NoRotation()) }));
+            exportTasks.Add(new ExportTask(relevantPages[1], new List<IPageTransformation>() { new PageRotation(PageOrientation.UpsideDown()) }));
+            exportTasks.Add(new ExportTask(relevantPages[2], new PageRotation(PageOrientation.RotateRight())));
+            exportTasks.Add(new ExportTask(relevantPages[3], new PageRotation(PageOrientation.NoRotation())));
 
             Stream outputStream = new FileStream(outputFilename, FileMode.OpenOrCreate, FileAccess.ReadWrite);
             PdfAssembler assembler = new PdfAssembler(outputStream);

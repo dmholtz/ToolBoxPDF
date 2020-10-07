@@ -49,6 +49,9 @@ namespace UWPApp
                     case Tool.Select:
                         ToolFrame.Navigate(typeof(SelectToolPage));
                         break;
+                    case Tool.Rotate:
+                        ToolFrame.Navigate(typeof(RotateToolFrame));
+                        break;
                     case Tool.Encrypt:
                         ToolFrame.Navigate(typeof(EncryptToolPage));
                         break;
