@@ -16,7 +16,6 @@ using Windows.UI.Xaml.Media;
 using UWPApp.FileIO;
 using ToolBoxPDF.Core.PageRangePackage;
 using ToolBoxPDF.Core.IO;
-using iText.Kernel.XMP.Options;
 
 namespace UWPApp.ToolFrames
 {
