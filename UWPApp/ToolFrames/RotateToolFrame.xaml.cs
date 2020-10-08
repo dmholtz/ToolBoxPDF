@@ -10,12 +10,11 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Windows.Data.Pdf;
-using Windows.Storage.Streams;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Media;
 using UWPApp.FileIO;
 using ToolBoxPDF.Core.PageRangePackage;
 using ToolBoxPDF.Core.IO;
+using UWPApp.UIElementFrames;
 
 namespace UWPApp.ToolFrames
 {
@@ -27,6 +26,8 @@ namespace UWPApp.ToolFrames
         private static readonly string PAGE_TITLE = "Rotate pages";
 
         private ToolPage rootPage;
+
+        private RenderedPagePreview renderedPagePreview;
 
         /// <summary>
         /// Contains one unprotected file
@@ -90,7 +91,8 @@ namespace UWPApp.ToolFrames
                         renderDocument = await PdfDocument.LoadFromFileAsync(loadedFile.File);
                         renderedPageNumber = 1;
                         SetCurrentPageLabel();
-                        await RenderPageAsync(renderedPageNumber);
+                        var x = RenderedPagePreviewFrame.Navigate(typeof(RenderedPagePreview), renderDocument);
+                        renderedPagePreview = RenderedPagePreview.Current;
                     }
                     catch (Exception)
                     {
@@ -157,106 +159,15 @@ namespace UWPApp.ToolFrames
             }
         }
 
-        private async Task RenderPageAsync(uint pageNumber)
-        {
-            // Convert from 1-based page number to 0-based page index.
-            uint pageIndex = pageNumber - 1;
-
-            using (PdfPage page = renderDocument.GetPage(pageIndex))
-            {
-                var options1 = new PdfPageRenderOptions();
-                options1.BackgroundColor = Windows.UI.Colors.Transparent;
-                uint actualWidth = (uint)(PreviewArea.ActualWidth - PreviewBorder.Margin.Left - PreviewBorder.Margin.Right - 4);
-                ScaledRectangle displayedPageDimension;
-
-                if (rotations[(int)pageIndex].DegAngle % 180 == 0)
-                {
-                    // Raw page orientation matches displayed page orientation
-                    displayedPageDimension = new ScaledRectangle(page.Size.Height, page.Size.Width);
-                }
-                else
-                {
-                    // Raw page orientation does not match the displayed page orientation
-                    displayedPageDimension = new ScaledRectangle(page.Size.Width, page.Size.Height);
-                }
-
-                uint stretchedHeight = (uint)displayedPageDimension.GetScaledHeight(actualWidth);
-                var maxHeight = Preview.MaxHeight;
-                if (stretchedHeight > maxHeight)
-                {
-                    options1.DestinationHeight = (uint)(maxHeight);
-                    options1.DestinationWidth = (uint)(displayedPageDimension.GetScaledWidth(maxHeight));
-                }
-                else
-                {
-                    options1.DestinationHeight = stretchedHeight;
-                    options1.DestinationWidth = actualWidth;
-                }
-
-                // update decent border around the previewed page
-                PreviewBorder.Height = options1.DestinationHeight;
-                PreviewBorder.Width = options1.DestinationWidth;
-
-                var stream = new InMemoryRandomAccessStream();
-                await page.RenderToStreamAsync(stream, options1);
-
-                BitmapImage src = new BitmapImage();
-                await src.SetSourceAsync(stream);
-                Preview.Source = src;
-
-                RotateTransform rotationTransform = new RotateTransform()
-                {
-                    Angle = rotations[(int)pageIndex].DegAngle,
-                    CenterX = (PreviewBorder.Width-4) / 2,
-                    CenterY = (PreviewBorder.Height-4) / 2
-                };
-
-                ScaleTransform scaleTransform;
-                if (rotations[(int)pageIndex].DegAngle % 180 == 0)
-                {
-                    scaleTransform = new ScaleTransform()
-                    {
-                        ScaleX = 1,
-                        ScaleY = 1,
-                    };
-                }
-                else
-                {
-                    scaleTransform = new ScaleTransform()
-                    {
-                        CenterX = (PreviewBorder.Width - 4) / 2,
-                        CenterY = (PreviewBorder.Height - 4) / 2,
-                        ScaleX = displayedPageDimension.AspectRatio,
-                        ScaleY = 1 / displayedPageDimension.AspectRatio,
-                    };
-                }
-
-                TransformGroup renderTransform = new TransformGroup();
-                renderTransform.Children.Add(rotationTransform);
-                renderTransform.Children.Add(scaleTransform);
-
-                Preview.RenderTransform = renderTransform;                
-            }
-        }
-
-        private async void Border_SizeChangedAsync(object sender, SizeChangedEventArgs e)
-        {
-            if (renderDocument != null)
-            {
-                await RenderPageAsync(renderedPageNumber);
-            }
-        }
-
         private async void PreviousPage_Click(object sender, RoutedEventArgs e)
         {
             if (renderedPageNumber > 1)
             {
                 renderedPageNumber--;
-                await RenderPageAsync(renderedPageNumber);
+                await renderedPagePreview.RenderPageAsync(renderedPageNumber, GetRenderedPageRotation());
                 // update tick icon and pagenumber
                 SetCurrentPageLabel();
             }
-
         }
 
         private async void NextPage_Click(object sender, RoutedEventArgs e)
@@ -264,7 +175,7 @@ namespace UWPApp.ToolFrames
             if (renderedPageNumber < loadedFile.PageCount)
             {
                 renderedPageNumber++;
-                await RenderPageAsync(renderedPageNumber);
+                await renderedPagePreview.RenderPageAsync(renderedPageNumber, GetRenderedPageRotation());
                 // update tick icon and pagenumber
                 SetCurrentPageLabel();
             }
@@ -289,35 +200,7 @@ namespace UWPApp.ToolFrames
             {
                 inputBox.Foreground = new SolidColorBrush(Windows.UI.Colors.Black);
                 renderedPageNumber = pageNumber;
-                await RenderPageAsync(renderedPageNumber);
-            }
-        }
-
-        private class ScaledRectangle
-        {
-            public double Height { get; }
-            public double Width { get; }
-
-            /// <summary>
-            /// Aspect Ratio of the rectangle: Width / Height
-            /// </summary>
-            public double AspectRatio { get; }
-
-            public ScaledRectangle(double height, double width)
-            {
-                Height = height;
-                Width = width;
-                AspectRatio = width / height;
-            }
-
-            public double GetScaledWidth(double height)
-            {
-                return height / Height * Width;
-            }
-
-            public double GetScaledHeight(double width)
-            {
-                return width / Width * Height;
+                await renderedPagePreview.RenderPageAsync(renderedPageNumber, GetRenderedPageRotation());
             }
         }
 
@@ -325,7 +208,7 @@ namespace UWPApp.ToolFrames
         {
             int pageIndex = (int)renderedPageNumber - 1;
             rotations[pageIndex]++;
-            await RenderPageAsync(renderedPageNumber);
+            await renderedPagePreview.RenderPageAsync(renderedPageNumber, GetRenderedPageRotation());
         }
 
         /// <summary>
@@ -339,6 +222,12 @@ namespace UWPApp.ToolFrames
             {
                 rotations.Add(PageOrientation.NoRotation());
             }
+        }
+
+        private int GetRenderedPageRotation()
+        {
+            int pageIndex = (int)renderedPageNumber - 1;
+            return (int) rotations[pageIndex].DegAngle;
         }
     }
 }

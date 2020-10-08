@@ -2,7 +2,6 @@
     x:Class="UWPApp.ToolFrames.SelectToolPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:UniPDF_UWP"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -85,9 +84,7 @@
                                     <TextBlock Grid.Column="5" Text="select page" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,10,0"/>
                                     <ToggleButton x:Name="CurrentPageSelectButton" Content="&#xE73E;" FontFamily="Segoe MDL2 Assets" Grid.Column="6" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Stretch" Click="CurrentPageSelectButton_Click"/>
                                 </Grid>
-                                <Border x:Name="PreviewBorder" BorderBrush="Black" BorderThickness="1" Margin="5">
-                                    <Image x:Name="Preview" AutomationProperties.Name="PDF document content" Stretch="None" Height="400" MaxHeight="400" />
-                                </Border>
+                                <Frame x:Name="RenderedPagePreviewFrame" Margin ="5" />
                             </StackPanel>
                         </Border>
 

@@ -54,7 +54,7 @@
                         <TextBlock Text="Rotate Pages" Style="{StaticResource SubtitleTextBlockStyle}"/>
                         <TextBlock Text="For each page, define an individual page orientation:" TextWrapping="WrapWholeWords" />
 
-                        <Border x:Name="PreviewArea" BorderBrush="DarkGray" BorderThickness="1" HorizontalAlignment="Stretch" Margin="15,10,0,10" SizeChanged="Border_SizeChangedAsync" >
+                        <Border x:Name="PreviewArea" BorderBrush="DarkGray" BorderThickness="1" HorizontalAlignment="Stretch" Margin="15,10,0,10" >
                             <StackPanel>
                                 <Grid HorizontalAlignment="Stretch" Margin="10,5,0,0">
                                     <Grid.ColumnDefinitions>
@@ -76,9 +76,7 @@
                                     <TextBlock Grid.Column="5" Text="rotate page:" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,10,0"/>
                                     <Button x:Name="RotateButton" Grid.Column="6" Content="&#xE7AD;" FontSize="20" Padding="0" Height="32" Width="40" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Stretch" Click="RotateButton_Click" />
                                 </Grid>
-                                <Border x:Name="PreviewBorder" BorderBrush="Black" BorderThickness="1" Margin="5" Background="White">
-                                    <Image x:Name="Preview" AutomationProperties.Name="PDF document content" Stretch="Uniform" MaxHeight="500"/>
-                                </Border>
+                                <Frame x:Name="RenderedPagePreviewFrame" Margin ="5"/>
                             </StackPanel>
                         </Border>
                         <Button x:Name="SaveButton" Margin ="15,10,0,10" Content="Save Document" HorizontalAlignment="Left" Click="SaveButton_Click"/>
