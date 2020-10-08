@@ -10,13 +10,12 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Windows.Data.Pdf;
-using Windows.Storage.Streams;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Controls.Primitives;
 using UWPApp.FileIO;
 using ToolBoxPDF.Core.PageRangePackage;
 using ToolBoxPDF.Core.IO;
+using UWPApp.UIElementFrames;
 
 namespace UWPApp.ToolFrames
 {
@@ -28,6 +27,8 @@ namespace UWPApp.ToolFrames
         private static readonly string PAGE_TITLE = "Extract selected pages";
 
         private ToolPage rootPage;
+
+        private RenderedPagePreview renderedPagePreview;
 
         /// <summary>
         /// Contains one unprotected file
@@ -87,10 +88,12 @@ namespace UWPApp.ToolFrames
 
                     // load the file separately for rendering
                     try
-                    {
+                    {                       
                         renderDocument = await PdfDocument.LoadFromFileAsync(loadedFile.File);
                         renderedPageNumber = 1;
-                        await RenderPageAsync(renderedPageNumber);
+                        SetCurrentPageLabel();
+                        RenderedPagePreviewFrame.Navigate(typeof(RenderedPagePreview), renderDocument);
+                        renderedPagePreview = RenderedPagePreview.Current;
                     }
                     catch (Exception)
                     {
@@ -211,53 +214,11 @@ namespace UWPApp.ToolFrames
             }
         }
 
-        private async Task RenderPageAsync(uint pageNumber)
-        {
-            // Convert from 1-based page number to 0-based page index.
-            uint pageIndex = pageNumber - 1;
-
-            using (PdfPage page = renderDocument.GetPage(pageIndex))
-            {
-                ScaledRectangle pageDimension = new ScaledRectangle(page.Size.Height, page.Size.Width);
-
-                uint actualWidth = (uint)(PreviewArea.ActualWidth - PreviewBorder.Margin.Left - PreviewBorder.Margin.Right - 4);
-                uint strechedHeight = (uint)pageDimension.GetScaledHeight(actualWidth);
-
-                var options1 = new PdfPageRenderOptions();
-
-                if (strechedHeight > Preview.MaxHeight)
-                {
-                    options1.DestinationHeight = (uint)(Preview.MaxHeight);
-                    options1.DestinationWidth = (uint)(pageDimension.GetScaledWidth(Preview.MaxHeight));
-                    //ToolPage.Current.NotifyUser(page.Size.Height.ToString() + " " + page.Size.Width.ToString() + " " + Preview.MaxHeight.ToString() + " " + options1.DestinationWidth.ToString(), NotifyType.StatusMessage);
-                }
-                else
-                {
-                    options1.DestinationHeight = strechedHeight;
-                    options1.DestinationWidth = actualWidth;
-                    ToolPage.Current.NotifyUser(page.Size.Height.ToString() + " " + page.Size.Width.ToString() + " " + options1.DestinationHeight.ToString() + " " + options1.DestinationWidth, NotifyType.StatusMessage);
-                }
-
-                // update decent border around the previewed page
-                PreviewBorder.Height = options1.DestinationHeight;
-                PreviewBorder.Width = options1.DestinationWidth;
-
-
-                var stream = new InMemoryRandomAccessStream();
-                await page.RenderToStreamAsync(stream, options1);
-
-                BitmapImage src = new BitmapImage();
-                Preview.Source = src;
-
-                await src.SetSourceAsync(stream);
-            }
-        }
-
         private async void Border_SizeChangedAsync(object sender, SizeChangedEventArgs e)
         {
             if (renderDocument != null)
             {
-                await RenderPageAsync(renderedPageNumber);
+                await renderedPagePreview.RenderPageAsync(renderedPageNumber);
             }
         }
 
@@ -266,7 +227,7 @@ namespace UWPApp.ToolFrames
             if (renderedPageNumber > 1)
             {
                 renderedPageNumber--;
-                await RenderPageAsync(renderedPageNumber);
+                await renderedPagePreview.RenderPageAsync(renderedPageNumber);
                 // update tick icon and pagenumber
                 SetToggleButtonState();
                 SetCurrentPageLabel();
@@ -279,7 +240,7 @@ namespace UWPApp.ToolFrames
             if (renderedPageNumber < loadedFile.PageCount)
             {
                 renderedPageNumber++;
-                await RenderPageAsync(renderedPageNumber);
+                await renderedPagePreview.RenderPageAsync(renderedPageNumber);
                 // update tick icon and pagenumber
                 SetToggleButtonState();
                 SetCurrentPageLabel();
@@ -333,7 +294,7 @@ namespace UWPApp.ToolFrames
                 inputBox.Foreground = new SolidColorBrush(Windows.UI.Colors.Black);
                 renderedPageNumber = pageNumber;
                 SetToggleButtonState();
-                await RenderPageAsync(renderedPageNumber);
+                await renderedPagePreview.RenderPageAsync(renderedPageNumber);
             }
         }
 
@@ -370,28 +331,6 @@ namespace UWPApp.ToolFrames
                 SummaryText.Text = numberOfPages.ToString()+ " pages are extracted.";
             }
             ToolPage.Current.NotifyUser(String.Empty, NotifyType.StatusMessage);
-        }
-
-        private class ScaledRectangle
-        {
-            public double Height { get; }
-            public double Width { get; }
-
-            public ScaledRectangle(double height, double width)
-            {
-                Height = height;
-                Width = width;
-            }
-
-            public double GetScaledWidth(double height)
-            {
-                return height / Height * Width;
-            }
-
-            public double GetScaledHeight(double width)
-            {
-                return width / Width * Height;
-            }
         }
     }
 }
