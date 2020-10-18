@@ -3,6 +3,9 @@ using ToolBoxPDF.Core.PageRangePackage;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using iText.Kernel.Geom;
+using System.Threading.Tasks;
 
 namespace ToolBoxPDF.Core.IO
 {
@@ -49,7 +52,6 @@ namespace ToolBoxPDF.Core.IO
         private void ExportOperation(PdfWriter outputWriter)
         {
             PdfDocument outputDocument = new PdfDocument(outputWriter);
-
             AssembleFile(outputDocument);
 
             outputDocument.Close();
@@ -63,7 +65,7 @@ namespace ToolBoxPDF.Core.IO
                 ExportTask task = exportTasks.Dequeue();
                 PageRange pageRange = task.Pages;
                 foreach(var pageNum in pageRange)
-                {
+                {                                       
                     PdfPage page = pageRange.Document.GetPage(pageNum).CopyTo(doc);
                     
                     // execute transformation pipeline

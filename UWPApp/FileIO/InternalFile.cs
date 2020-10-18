@@ -112,6 +112,7 @@ namespace UWPApp.FileIO
         {
             var inputStream = await File.OpenStreamForReadAsync();
             PdfReader inputReader = new PdfReader(inputStream);
+            inputReader.SetUnethicalReading(true);  // access document without owner password
             try
             {
                 // try, whether the PdfDocumet can be opened without a key
