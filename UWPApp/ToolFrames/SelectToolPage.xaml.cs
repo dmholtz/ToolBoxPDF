@@ -91,9 +91,9 @@ namespace UWPApp.ToolFrames
                     {                       
                         renderDocument = await PdfDocument.LoadFromFileAsync(loadedFile.File);
                         renderedPageNumber = 1;
-                        SetCurrentPageLabel();
                         RenderedPagePreviewFrame.Navigate(typeof(RenderedPagePreview), renderDocument);
                         renderedPagePreview = RenderedPagePreview.Current;
+                        SetCurrentPageLabel();             
                     }
                     catch (Exception)
                     {
